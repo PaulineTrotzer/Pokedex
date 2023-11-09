@@ -5,12 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokédex</title>
-    <script src="script.js"></script>
+    <script src="./js/script.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" type="image/x-icon" href="./img/pokeball.png"> <!--<a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Freepik - Flaticon</a>-->
+    <link rel="stylesheet" href="./fonts/fonts.css">
+    <link rel="shortcut icon" type="image/x-icon" href="./img/pokeball.png">
+    <!--<a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Freepik - Flaticon</a>-->
 </head>
 
-<body>
+<body onload="loadPokemon()">
+    <div id="content">
+        <div w3-include-html="templates/header.html"></div>  <!--< TO Do -->
+        
+        <div id="pokecard-main"></div>
+
+    
+
+    </div>
 
 </body>
 
