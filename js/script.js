@@ -48,29 +48,41 @@ function renderPokemonInfo(currentPokemon, i) {
     let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
     let category = currentPokemon['types'][0]['type']['name'];
 
-    generatePokeCard(PokeId, name, image, category);
+    checkSpecialCategory(PokeId, name, image, category);
+
 }
 
-function generatePokeCard(PokeId, name, image, category) {
+function checkSpecialCategory(PokeId, name, image, category) {
+    let x = currentPokemon['types'].length;
+    if (x > 1) {
+        let specialCategory = currentPokemon['types']['1']['type']['name'];
+        generatePokeCard(PokeId, name, image, category, specialCategory);
+
+    } else {
+        generatePokeCard(PokeId, name, image, category);
+    }
+
+}
+
+function generatePokeCard(PokeId, name, image, category, specialCategory) {
 
     document.getElementById('pokecard-main').innerHTML +=
      /*html*/`
-     <div class="single-pokeCard">
+     <div id='single-pokeCard' class="single-pokeCard">
 
             <div class="name-category-img-container">
                 <div class="name-and-category-container">
                     <h1 id="pokemonName">${name}</h1>
                     <div id="category">${category}</div>
-                </div>
+                    <div id="special-category">${specialCategory ? specialCategory : ''}</div>
                 <img id="pokemonImage" src="${image}">
                 <h5>${PokeId}</h5>
             </div>
 </div>
-    
 `;
 
-
 }
+
 
 
 
