@@ -48,6 +48,11 @@ h1 {
   margin-block-start: 0;
   margin-block-end: 0;
   font-size: 27px !important;
+  color: white !important;
+}
+
+h5{
+  color: black !important; 
 }
 
 #pokecard-main {
@@ -64,7 +69,6 @@ h1 {
 .single-pokeCard {
   display: flex;
   flex-direction: column;
-  background-color: rgb(128, 0, 255);
   width: 355px;
   padding: 28px;
   border-radius: 18px;
@@ -72,7 +76,31 @@ h1 {
   border: 2px solid;
   border-color: white;
   margin: 1%;
+}
 
+/*
+.single-pokeCard:hover{
+  transform: scale(0.98, 0.98);
+  transition: 0.4s;
+  overflow: visible;
+  opacity: 0.9;
+  background-color: black !important;
+  cursor: pointer;
+}
+*/
+
+/*
+.single-pokeCard:hover #pokemonImage{
+  transform: scale(1.55, 1.55);
+  transition: 0.4s;
+  color: rgba(0, 0, 0, 0.1);
+
+}*/
+
+.category-container{
+  border-style:dotted;
+  border-color: black;
+  color: black;
 }
 
 .name-and-category-container {
