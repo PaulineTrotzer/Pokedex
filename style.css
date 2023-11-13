@@ -7,7 +7,7 @@
 }
 
 body {
-  background-image: url('/img/wallpaper.jpg');
+  background-image: url("/img/wallpaper.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -47,13 +47,11 @@ body {
 h1 {
   margin-block-start: 0;
   margin-block-end: 0;
-  font-size: 27px !important;
+  font-size: 23px !important;
   color: white !important;
 }
 
-h5{
-  color: black !important; 
-}
+
 
 #pokecard-main {
   display: flex;
@@ -69,13 +67,20 @@ h5{
 .single-pokeCard {
   display: flex;
   flex-direction: column;
-  width: 355px;
-  padding: 28px;
+  padding: 20px;
+  width: 300px;
   border-radius: 18px;
   box-shadow: inset 0px 5px 10px 0px rgba(255, 255, 255, 0.65);
   border: 2px solid;
   border-color: white;
   margin: 1%;
+  overflow: hidden; 
+}
+.singlePokecard-id {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  color: black !important;
 }
 
 /*
@@ -95,24 +100,36 @@ h5{
   transition: 0.4s;
   color: rgba(0, 0, 0, 0.1);
 
-}*/
+}
+*/
 
-.category-container{
-  border-style:dotted;
+.category-container {
+  border: 2px solid;
+  border-radius: 5px;
   border-color: black;
-  color: black;
+  padding: 3px;
+  width: 65px;
+  text-align: center;
+  font-size: 14px !important;
+  color: white;
 }
 
-.name-and-category-container {
+.spc-name-category-img-container {
+  display: flex !important;
+  width: 100% !important;
+  position: relative !important;
+
+}
+
+.spc-name-and-category-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 108px;
+  gap: 6px;
   justify-content: flex-start;
 }
 
-.name-category-img-container {
-  display: flex;
-}
 
 #pokemonImage {
   width: 150px;
@@ -126,4 +143,53 @@ h5{
   border-top-right-radius: 40px;
   /*margin-top: -40px;*/
   min-height: 100px;
+}
+
+.d-none {
+  display: none;
+}
+
+/* Styles for ColorTags - Category - Container*/
+
+.grass-background-color {
+  background-color: #1c850e;
+}
+.fire-background-color {
+  background-color: #f26a09;
+}
+.water-background-color {
+  background-color: #286db1;
+}
+.bug-background-color {
+  background: #93b93c;
+}
+.normal-background-color {
+  background-color: #7e808c;
+}
+.poison-background-color {
+  background-color: #963dbf;
+}
+.electric-background-color {
+  background-color: #e0c617;
+}
+.ground-background-color {
+  background-color: #ce7546;
+}
+.fairy-background-color {
+  background-color: #e25eba;
+}
+.fighting-background-color {
+  background-color: #da3861;
+}
+.psychich-background-color {
+  background-origin: #d84a4c;
+}
+.ghost-background-color {
+  background-color: #3b57ae;
+}
+.ice-background-color {
+  background-color: #52d3c4;
+}
+.dragon-background-color {
+  background-color: #0975da;
 }

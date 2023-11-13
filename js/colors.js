@@ -50,3 +50,45 @@ function findColor(type) {
 }
 
 
+function findColorTag(type) {
+    switch (type) {
+        case 'normal':
+            return '#8d8e96';
+        case 'fire':
+            return '#fd6f0a';
+        case 'water':
+            return '#3d7ebf';
+        case 'electric':
+            return '#ebce17';
+        case 'grass':
+            return '#55984f';
+        case 'ice':
+            return '#55b0a9';
+        case 'fighting':
+            return '#bd3b57';
+        case 'poison':
+            return '#9750bf';
+        case 'ground':
+            return '#c56e3f';
+        case 'flying':
+            return '#6987b2';
+        case 'psychic':
+            return '#d85456';
+        case 'bug':
+            return '#7fa12f';
+        case 'rock':
+            return '#a49276';
+        case 'ghost':
+            return '#455196';
+        case 'dragon':
+            return '#0b60aa';
+        case 'dark':
+            return '#504f54';
+        case 'steel':
+            return '#3c738c';
+        case 'fairy':
+            return '#d85ebe';
+        default:
+            return '#6b6b6b';
+    }
+}

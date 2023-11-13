@@ -2,13 +2,15 @@
 let currentPokemon;
 let allPokemons = [];
 let limitedPokemon = 31;
-let currentIndex = 0;
+let currentIndex;
 
 
 
-function init() {
+
+async function init() {
     includeHTML();
-    loadPokemon();
+    await loadPokemon();
+
 }
 
 async function includeHTML() {
@@ -43,13 +45,14 @@ function renderPokemonInfo(currentPokemon, i) {
 
     let PokeId = '#' + currentPokemon['id'];
     let name = currentPokemon['name'];
+    name = name.charAt(0).toUpperCase() + name.slice(1);
     let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
     let category = currentPokemon['types'][0]['type']['name'];
 
-    checkSpecialCategory(PokeId, name, image, category);
+    checkSpecialCategory(PokeId, name, image, category)
 }
 
-function checkSpecialCategory(PokeId, name, image, category) {
+function checkSpecialCategory(PokeId, name, image, category, i) {
     let x = currentPokemon['types'].length;
     if (x > 1) {
         let specialCategory = currentPokemon['types']['1']['type']['name'];
@@ -63,40 +66,36 @@ function checkSpecialCategory(PokeId, name, image, category) {
 
 function generatePokeCard(PokeId, name, image, category, specialCategory) {
     let backgroundColor = setBackgroundcolor(category);
-    let firstCharactertrait = setCharactertraits(category);
-    let secondCharactertrait = setCharactertraits(specialCategory);
+    let i = PokeId;
 
-    let styleString = `
-    background-color: ${backgroundColor};
-    ${firstCharactertrait}
-`;
-
-
-    if (specialCategory) {
-        styleString += `${secondCharactertrait}`;
-    }
+    let specialCategoryContainer = generateSpecialCategoryContainer(specialCategory);
 
 
     document.getElementById('pokecard-main').innerHTML +=
      /*html*/`
-     <div id='single-pokeCard' class="single-pokeCard" style="background-color:${backgroundColor};">
-
-            <div class="name-category-img-container">
-                <div class="name-and-category-container">
+     <div onclick="showCardDetails('${PokeId}')" id='single-pokeCard${i}' class="single-pokeCard" style="background-color:${backgroundColor};">
+            <div class=singlePokecard-id><h5>${PokeId}</h5></div>
+            <div class="spc-name-category-img-container">
+                <div class="spc-name-and-category-container">
                     <h1 id="pokemonName">${name}</h1>
-                    <div id="category" class="category-container" style="${firstCharactertrait};">${category}</div>
-                    <div id="special-category" class="special-category-container" style="${secondCharactertrait};">${specialCategory ? specialCategory : ''}</div>
+                    <div id="category" class="category-container ${setCharactertraits(category)}">${category}</div>
+                    ${specialCategoryContainer}
                 </div>
                 <img id="pokemonImage" src="${image}">
-                <h5>${PokeId}</h5>
             </div>
-
 `;
+}
+
+function generateSpecialCategoryContainer(specialCategory) {
+    if (specialCategory) {
+        return `<div id="special-category" class="category-container ${setCharactertraits(specialCategory)}">${specialCategory}</div>`;
+    } else {
+        return '';
+    }
 }
 
 
 function setBackgroundcolor(category) {
-
     switch (category) {
         case 'normal':
             return '#9fa0a8';
@@ -142,43 +141,57 @@ function setBackgroundcolor(category) {
 function setCharactertraits(type) {
     switch (type) {
         case 'normal':
-            return 'color: #8d8e96;';
+            return 'normal-background-color';
         case 'fire':
-            return 'color: #fd6f0a;';
+            return 'fire-background-color';
         case 'water':
-            return 'color: #3d7ebf;';
+            return 'water-background-color';
         case 'electric':
-            return 'color: #ebce17;';
+            return 'electric-background-color';
         case 'grass':
-            return 'color: #006400;';
+            return 'grass-background-color';
         case 'ice':
-            return 'color: #55b0a9;';
+            return 'ice-background-color';
         case 'fighting':
-            return 'color: #bd3b57;';
+            return 'fighting-background-color';
         case 'poison':
-            return 'color: #9750bf;';
+            return 'poison-background-color';
         case 'ground':
-            return 'color: #c56e3f;';
+            return 'ground-background-color';
         case 'flying':
-            return 'color: #6987b2;';
+            return 'flying-background-color';
         case 'psychic':
-            return 'color: #d85456;';
+            return 'psychic-background-color';
         case 'bug':
-            return 'color: #7fa12f;';
+            return 'bug-background-color';
         case 'rock':
-            return 'color: #a49276;';
+            return 'rock-background-color';
         case 'ghost':
-            return 'color: #455196;';
+            return 'ghost-background-color';
         case 'dragon':
-            return 'color: #0b60aa;';
+            return 'dragon-background-color';
         case 'dark':
-            return 'color: #504f54;';
+            return 'dark-background-color';
         case 'steel':
-            return 'color: #3c738c;';
+            return 'steel-background-color';
         case 'fairy':
-            return 'color: #d85ebe;';
-        default:
-            return 'color: #6b6b6b;';
+            return 'fairy-background-color';
     }
+}
+
+
+function showCardDetails(PokeId) {
+    document.getElementById('popup-card').innerHTML += generateDetailCard(PokeId);
+}
+
+
+function generateDetailCard(PokeId) {
+    return /*html*/`
+    <div>TEST</div>
+    <img alt="pokemon-pic">
+    
+    
+    
+    `;
 }
 
