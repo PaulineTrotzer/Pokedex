@@ -51,10 +51,8 @@ h1 {
   color: white !important;
 }
 
-
-
 #pokecard-main {
-  display: flex;
+  display: flex !important;
   flex-wrap: wrap;
   color: white;
   display: flex;
@@ -74,7 +72,8 @@ h1 {
   border: 2px solid;
   border-color: white;
   margin: 1%;
-  overflow: hidden; 
+  overflow: hidden;
+  cursor: pointer;
 }
 .singlePokecard-id {
   display: flex;
@@ -118,7 +117,6 @@ h1 {
   display: flex !important;
   width: 100% !important;
   position: relative !important;
-
 }
 
 .spc-name-and-category-container {
@@ -130,11 +128,9 @@ h1 {
   justify-content: flex-start;
 }
 
-
 #pokemonImage {
   width: 150px;
   height: 150px;
-  z-index: 2;
 }
 
 .info-container {
@@ -143,10 +139,6 @@ h1 {
   border-top-right-radius: 40px;
   /*margin-top: -40px;*/
   min-height: 100px;
-}
-
-.d-none {
-  display: none;
 }
 
 /* Styles for ColorTags - Category - Container*/
@@ -192,4 +184,49 @@ h1 {
 }
 .dragon-background-color {
   background-color: #0975da;
+}
+
+/* Styles for ColorTags - Category - Container - ENDE */
+
+.popup-card {
+  position: fixed; /* schafft Overlay */
+  inset: 0; /* top: 0, left: 0, right: 0, bottom: 0; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.Detail-Main-Container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50vw;
+  height: 85vh;
+  padding: 14px;
+  border: 2px solid;
+  border-radius: 20px;
+  border-color: #f3f5fa;
+  box-shadow: inset 0px 0px 10px 0px rgba(255, 255, 255, 0.7);
+  overflow-y: scroll;
+  background: white;
+}
+
+.close-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon-class {
+  width: 34px;
+  cursor: pointer;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-none {
+  display: none;
 }

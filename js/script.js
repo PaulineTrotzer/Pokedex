@@ -2,8 +2,6 @@
 let currentPokemon;
 let allPokemons = [];
 let limitedPokemon = 31;
-let currentIndex;
-
 
 
 
@@ -36,12 +34,12 @@ async function loadPokemon() {
         console.log('loaded Pokemon', currentPokemon);
 
         allPokemons.push(currentPokemon);
-        renderPokemonInfo(currentPokemon, i);
+        renderPokemonInfo();
 
     }
 }
 
-function renderPokemonInfo(currentPokemon, i) {
+function renderPokemonInfo() {
 
     let PokeId = '#' + currentPokemon['id'];
     let name = currentPokemon['name'];
@@ -52,7 +50,7 @@ function renderPokemonInfo(currentPokemon, i) {
     checkSpecialCategory(PokeId, name, image, category)
 }
 
-function checkSpecialCategory(PokeId, name, image, category, i) {
+function checkSpecialCategory(PokeId, name, image, category) {
     let x = currentPokemon['types'].length;
     if (x > 1) {
         let specialCategory = currentPokemon['types']['1']['type']['name'];
@@ -61,20 +59,20 @@ function checkSpecialCategory(PokeId, name, image, category, i) {
     } else {
         generatePokeCard(PokeId, name, image, category);
     }
-
 }
+
 
 function generatePokeCard(PokeId, name, image, category, specialCategory) {
     let backgroundColor = setBackgroundcolor(category);
+    let j = currentPokemon['id'];
     let i = PokeId;
 
     let specialCategoryContainer = generateSpecialCategoryContainer(specialCategory);
 
-
     document.getElementById('pokecard-main').innerHTML +=
      /*html*/`
-     <div onclick="showCardDetails('${PokeId}')" id='single-pokeCard${i}' class="single-pokeCard" style="background-color:${backgroundColor};">
-            <div class=singlePokecard-id><h5>${PokeId}</h5></div>
+     <div onclick="openCardDetails(${j})" id='single-pokeCard${j}' class="single-pokeCard" style="background-color:${backgroundColor};">
+            <div class=singlePokecard-id><h5>${i}</h5></div>
             <div class="spc-name-category-img-container">
                 <div class="spc-name-and-category-container">
                     <h1 id="pokemonName">${name}</h1>
@@ -180,18 +178,69 @@ function setCharactertraits(type) {
 }
 
 
-function showCardDetails(PokeId) {
-    document.getElementById('popup-card').innerHTML += generateDetailCard(PokeId);
+function openCardDetails(j) {
+    document.getElementById('popup-card').classList.remove("d-none");
+    document.getElementById('popup-card').innerHTML += generateDetailCard(j);
+
 }
 
 
-function generateDetailCard(PokeId) {
+function generateDetailCard(j) {
+    let pokemon = allPokemons[j - 1];
+    let i = '#' + pokemon['id'];
+
+    let DetailName = capitalizeFirstLetter(pokemon['name']);
+    let DetailfirstCategory = pokemon['types'][0]['type']['name'];
+    let DetailImage = pokemon['sprites']['other']['official-artwork']['front_default'];
+    let DetailsecondCategory = checkDetailSecondCategory(pokemon);
+
+
+
     return /*html*/`
-    <div>TEST</div>
-    <img alt="pokemon-pic">
-    
-    
+<div id="Detail-Main-Container${j}" class="Detail-Main-Container">
+        <!--  Top of Pokemon Card  -->
+  <div class="card-top">
+     <div onclick="closeDetailCard()" class="close-container">
+       <img class="icon-class" src=./img/remove-icon.svg>
+     </div>
+       <div id="Detail-Pokecard-ID" class="Detail-Pokecard-ID">${i}</div>
+        <div class="Detail-Poke-Categories">
+            <h2 id='Detail-Pokemon-Name'>${DetailName}</h2>
+            <img src="${DetailImage}">
+            <h2>${DetailfirstCategory}</h2>
+            ${DetailsecondCategory ? `<h2>${DetailsecondCategory}</h2>` : ''}
+        </div>
+  </div>
+        <!--  Bottom of Pokemon Card  -->
+        <div class="card-bottom">
+            <div class="back-forward-container">
+                <img class="icon-class" src=./img/arrow-long-left-icon.svg>
+                <img class="icon-class" src=./img/arrow-long-right-icon.svg>
+            </div>
+
+
+
+        </div>
+
+
+</div>  
     
     `;
 }
 
+function checkDetailSecondCategory(pokemon) {
+    if (pokemon['types'].length > 1) {
+        return pokemon['types'][1]['type']['name'];
+    } else {
+        return null;
+    }
+}
+
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+
+function closeDetailCard() {
+    document.getElementById('popup-card').classList.add("d-none");
+}
