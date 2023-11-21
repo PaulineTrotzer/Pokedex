@@ -1,8 +1,10 @@
 
 let currentPokemon;
 let allPokemons = [];
-let limitedPokemon = 31;
+let limitedPokemon = 21;
+let desc_array = []; /*leeres Array für Pokemon-Description*/
 
+let currentIndex = 0;
 
 
 async function init() {
@@ -33,11 +35,22 @@ async function loadPokemon() {
         currentPokemon = await response.json();
         console.log('loaded Pokemon', currentPokemon);
 
+        await fetchFlavorText(i);/* ruft die Beschreibung für das aktuelle Pokemon ab - anderes 'Server-Array, i gibt jeweiliges Pokemon weiter */
+
         allPokemons.push(currentPokemon);
         renderPokemonInfo();
 
     }
 }
+
+/* Funktion zum Abrufen der Beschreibung */
+async function fetchFlavorText(pokemonId) {
+    let descUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`;
+    let descResponse = await fetch(descUrl);
+    let json_desc = await descResponse.json();
+    desc_array.push(json_desc);
+}
+
 
 function renderPokemonInfo() {
 
@@ -72,15 +85,21 @@ function generatePokeCard(PokeId, name, image, category, specialCategory) {
     document.getElementById('pokecard-main').innerHTML +=
      /*html*/`
      <div onclick="openCardDetails(${j})" id='single-pokeCard${j}' class="single-pokeCard" style="background-color:${backgroundColor};">
-            <div class=singlePokecard-id><h5>${i}</h5></div>
-            <div class="spc-name-category-img-container">
+            <div class="singlePokecard-id"><h5>${i}</h5></div>
+            <div class="spc-name-category-images-container">
                 <div class="spc-name-and-category-container">
-                    <h1 id="pokemonName">${name}</h1>
-                    <div id="category" class="category-container ${setCharactertraits(category)}">${category}</div>
+                    <h1 id='pokemonName'>${name}</h1>
+                    <div id='category' class="category-container ${setCharactertraits(category)}">${category}</div>
                     ${specialCategoryContainer}
                 </div>
-                <img id="pokemonImage" src="${image}">
+                <div id="pokemon-image-container" class="usez-index">
+                <img id='pokemonImage' src="${image}">
+                </div>
+                <img class="black-pokeball" src=./img/pokeball.png>
             </div>
+           
+
+     </div>
 `;
 }
 
@@ -185,52 +204,80 @@ function openCardDetails(j) {
 }
 
 
+
 function generateDetailCard(j) {
+    currentIndex = j - 1;
     let pokemon = allPokemons[j - 1];
     let i = '#' + pokemon['id'];
+    let DetailfirstCategory = pokemon['types'][0]['type']['name'];
+    let backgroundColor = setBackgroundcolor(DetailfirstCategory);
+
+    let DetailDescription = getFlavorText(pokemon["id"]);/*ruft Beschreibung ab*/
+
+
+    let DetailfirstAbility = pokemon['abilities'][0]['ability']['name'];
+    let DetailsecondAbility = checkDetailSecondAbility(pokemon)
 
     let DetailName = capitalizeFirstLetter(pokemon['name']);
-    let DetailfirstCategory = pokemon['types'][0]['type']['name'];
     let DetailImage = pokemon['sprites']['other']['official-artwork']['front_default'];
-    let DetailsecondCategory = checkDetailSecondCategory(pokemon);
 
 
 
-    return /*html*/`
-<div id="Detail-Main-Container${j}" class="Detail-Main-Container">
+
+
+    document.getElementById('popup-card').innerHTML =/*html*/`
+<div id='Detail-Main-Container${j}' class="Detail-Main-Container" style="background-color: ${backgroundColor};">
         <!--  Top of Pokemon Card  -->
   <div class="card-top">
      <div onclick="closeDetailCard()" class="close-container">
        <img class="icon-class" src=./img/remove-icon.svg>
      </div>
-       <div id="Detail-Pokecard-ID" class="Detail-Pokecard-ID">${i}</div>
-        <div class="Detail-Poke-Categories">
+       <div id='Detail-Pokecard-ID' class="Detail-Pokecard-ID">${i}</div>
+        <div class="Detail-PokeName-Categories">
+        <h2 class="abilities ${setCharactertraits(DetailfirstCategory)}">${DetailfirstAbility}</h2>
+            ${DetailsecondAbility ? `<h2 class="abilities ${setCharactertraits(DetailfirstCategory)}">${DetailsecondAbility}</h2>` : ''}
             <h2 id='Detail-Pokemon-Name'>${DetailName}</h2>
-            <img src="${DetailImage}">
-            <h2>${DetailfirstCategory}</h2>
-            ${DetailsecondCategory ? `<h2>${DetailsecondCategory}</h2>` : ''}
         </div>
+        <div class="Detail-Image-Container">
+                 <img class="Detail-Pokemon-Image" src="${DetailImage}">
+              </div>
+              <img class="Detail-Black-Pokeball" src=./img/pokeball.png>
   </div>
         <!--  Bottom of Pokemon Card  -->
-        <div class="card-bottom">
+    <div class="card-bottom">
             <div class="back-forward-container">
                 <img class="icon-class" src=./img/arrow-long-left-icon.svg>
-                <img class="icon-class" src=./img/arrow-long-right-icon.svg>
+                <img onclick='clickForward()' class="icon-class" src=./img/arrow-long-right-icon.svg>
             </div>
+            <!--  Information about Pokemon -->
+        <div class="information-container">
+              <div class="navigation-container">
+                <a>About</a>
+                <a>Stats</a>
+                <a>Evolution</a>
+              </div>
+            <!--  Information-Text  -->
+             <div id='information-text-container'>
+                        <div class="about">
+                         <div class="description">
+                        ${DetailDescription}
+                         </div>
+                         <div class="height-section"></div>
+                         <div class="weight-section"></div>
+                         <div class="abilities-section"></div>
 
-
-
+                        </div>
+             </div>
         </div>
-
-
+    </div>
 </div>  
     
     `;
 }
 
-function checkDetailSecondCategory(pokemon) {
-    if (pokemon['types'].length > 1) {
-        return pokemon['types'][1]['type']['name'];
+function checkDetailSecondAbility(pokemon) {
+    if (pokemon['abilities'].length > 1) {
+        return pokemon['abilities'][1]['ability']['name'];
     } else {
         return null;
     }
@@ -240,7 +287,36 @@ function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function encodeFlavorText(flavorText) {
+    flavorText = flavorText.replace('POKéMON', 'Pokémon');
+    return flavorText;
+}
+
+
+function getFlavorText(pokemonId) {/* die Funktion nimmt den Paramter -pokemonId- entgegen, um auf das entsprechende Pokemon-Objekt zuzugreifen*/
+    const pokemonDesc = desc_array[pokemonId - 1];/*die Variable greift auf das Pokemon-Objekt im desc_array zu*/
+    if (pokemonDesc && pokemonDesc["flavor_text_entries"]) {
+        const filteredEntries = pokemonDesc["flavor_text_entries"].filter(entry => entry.language.name === "en");
+        const flavorText = filteredEntries.length > 0 ? filteredEntries[0].flavor_text : "";
+        const encodedFlavorText = encodeFlavorText(flavorText);
+        return encodedFlavorText;
+    }
+    return "";
+}
+
 
 function closeDetailCard() {
     document.getElementById('popup-card').classList.add("d-none");
 }
+
+function clickForward() {
+    currentIndex++;
+    if (currentIndex >= allPokemons.length) {
+        currentIndex = 0;
+    }
+ 
+    // Rufe die Funktion generateDetailCard mit dem aktualisierten Index auf
+    generateDetailCard(currentIndex + 1);
+}
+
+

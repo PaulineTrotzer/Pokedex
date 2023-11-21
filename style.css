@@ -7,11 +7,12 @@
 }
 
 body {
-  background-image: url("/img/wallpaper.jpg");
+  background-image: url("/img/wallpaper.jpg"); /*https://pixabay.com/de/illustrations/pokemon-planet-smartphone-weltraum-1619924/*/
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center;
-  margin: 0;
+  background-position: center center;
+  background-attachment: fixed;
+  margin: 0 !important;
   font-family: "Roboto", sans-serif;
 }
 
@@ -113,7 +114,7 @@ h1 {
   color: white;
 }
 
-.spc-name-category-img-container {
+.spc-name-category-images-container {
   display: flex !important;
   width: 100% !important;
   position: relative !important;
@@ -131,6 +132,15 @@ h1 {
 #pokemonImage {
   width: 150px;
   height: 150px;
+}
+
+/*a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Freepik - Flaticon*/
+.black-pokeball {
+  left: 162px;
+  top: -10px;
+  opacity: 0.1;
+  position: absolute;
+  width: 90%;
 }
 
 .info-container {
@@ -213,6 +223,72 @@ h1 {
   background: white;
 }
 
+.Detail-Pokecard-ID {
+  font-size: 32px !important;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+#Detail-Pokemon-Name {
+  margin-left: 8px;
+}
+
+.card-top {
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+
+.Detail-PokeName-Categories {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.abilities {
+  font-size: 22px;
+  font-weight: 500;
+  border: 2px solid;
+  border-radius: 5px;
+  border-color: black;
+  padding: 3px;
+  width: 122px;
+  text-align: center;
+  color: white;
+}
+
+.description {
+  background-color: lightgrey;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.Detail-Pokemon-Image {
+  width: 450px;
+  position: relative;
+}
+
+.Detail-Black-Pokeball {
+  opacity: 0.2;
+  position: absolute;
+  width: 80%;
+  left: -160px;
+  top: 120px;
+}
+
+.black-pokeball-detailcard {
+  opacity: 0.2;
+  position: absolute;
+  width: 80%;
+  left: -160px;
+  top: 120px;
+}
+
 .close-container {
   display: flex;
   justify-content: flex-end;
@@ -221,6 +297,26 @@ h1 {
 .icon-class {
   width: 34px;
   cursor: pointer;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+.card-bottom {
+  display: flex;
+  flex-direction: column;
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+
+.back-forward-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px;
+}
+
+.navigation-container {
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .d-flex {
