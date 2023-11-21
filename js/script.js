@@ -3,9 +3,12 @@ let currentPokemon;
 let allPokemons = [];
 let limitedPokemon = 21;
 let desc_array = []; /*leeres Array für Pokemon-Description*/
+let currentPokemonIndex = 0;
 
-let currentIndex = 0;
 
+function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich 1 ist*/
+    return index !== 1;
+}
 
 async function init() {
     includeHTML();
@@ -98,7 +101,6 @@ function generatePokeCard(PokeId, name, image, category, specialCategory) {
                 <img class="black-pokeball" src=./img/pokeball.png>
             </div>
            
-
      </div>
 `;
 }
@@ -198,16 +200,18 @@ function setCharactertraits(type) {
 
 
 function openCardDetails(j) {
+    currentPokemonIndex = j;/* nimmt Index des aktuellen Pokemons an*/
     document.getElementById('popup-card').classList.remove("d-none");
     document.getElementById('popup-card').innerHTML += generateDetailCard(j);
 
+    const arrowcontainer = document.getElementById('arrow-container');
+    arrowcontainer.style.justifyContent = checkShowBackArrow(j) ? "space-between" : "flex-end";/*if true= space-between, sonst false = flex-end;*/
 }
 
 
 
 function generateDetailCard(j) {
-    currentIndex = j - 1;
-    let pokemon = allPokemons[j - 1];
+    let pokemon = allPokemons[j - 1]; /*die ID des Pokemons ist 1 Wert grö0er als die Stelle des Pokemons im Array*/
     let i = '#' + pokemon['id'];
     let DetailfirstCategory = pokemon['types'][0]['type']['name'];
     let backgroundColor = setBackgroundcolor(DetailfirstCategory);
@@ -221,11 +225,11 @@ function generateDetailCard(j) {
     let DetailName = capitalizeFirstLetter(pokemon['name']);
     let DetailImage = pokemon['sprites']['other']['official-artwork']['front_default'];
 
+    let showBackArrow = checkShowBackArrow(j);
 
 
 
-
-    document.getElementById('popup-card').innerHTML =/*html*/`
+    return /*html*/`
 <div id='Detail-Main-Container${j}' class="Detail-Main-Container" style="background-color: ${backgroundColor};">
         <!--  Top of Pokemon Card  -->
   <div class="card-top">
@@ -245,8 +249,8 @@ function generateDetailCard(j) {
   </div>
         <!--  Bottom of Pokemon Card  -->
     <div class="card-bottom">
-            <div class="back-forward-container">
-                <img class="icon-class" src=./img/arrow-long-left-icon.svg>
+            <div id='arrow-container' class="back-forward-container">
+            ${showBackArrow ? `<img onclick='clickBackward()'class="icon-class" src=./img/arrow-long-left-icon.svg>` : ''}
                 <img onclick='clickForward()' class="icon-class" src=./img/arrow-long-right-icon.svg>
             </div>
             <!--  Information about Pokemon -->
@@ -283,6 +287,10 @@ function checkDetailSecondAbility(pokemon) {
     }
 }
 
+function checkShowBackArrow(index){
+    return index >1;
+}
+
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -310,13 +318,24 @@ function closeDetailCard() {
 }
 
 function clickForward() {
-    currentIndex++;
-    if (currentIndex >= allPokemons.length) {
-        currentIndex = 0;
+    currentPokemonIndex++;
+    if (currentPokemonIndex >= allPokemons.length) {
+        currentPokemonIndex = 0;
     }
- 
-    // Rufe die Funktion generateDetailCard mit dem aktualisierten Index auf
-    generateDetailCard(currentIndex + 1);
+    updateDetailCard()
 }
 
+function updateDetailCard() {
+    if (!document.getElementById('popup-card').classList.contains("d-none")) {
+        document.getElementById('popup-card').innerHTML = '';
+        document.getElementById('popup-card').innerHTML = generateDetailCard(currentPokemonIndex);
+    }
+}
 
+function clickBackward() {
+    currentPokemonIndex--;
+    if (currentPokemonIndex < 0) {
+        currentPokemonIndex = allPokemons.length - 1;
+    }
+    updateDetailCard();
+}
