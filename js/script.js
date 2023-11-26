@@ -1,10 +1,9 @@
-
 let currentPokemon;
 let allPokemons = [];
-let limitedPokemon = 21;
+let limitedPokemon = 7;
 let desc_array = []; /*leeres Array für Pokemon-Description*/
 let currentPokemonIndex = 0;
-
+let filteredPokemons = [];
 
 function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich 1 ist*/
     return index !== 1;
@@ -14,6 +13,7 @@ async function init() {
     includeHTML();
     await loadPokemon();
 
+    document.getElementById('formControlDefault').addEventListener('input', filterPokemons);
 }
 
 async function includeHTML() {
@@ -28,8 +28,8 @@ async function includeHTML() {
             element.innerHTML = 'Page not found';
         }
     }
-
 }
+
 
 async function loadPokemon() {
     for (let i = 1; i < limitedPokemon; i++) {
@@ -42,7 +42,6 @@ async function loadPokemon() {
 
         allPokemons.push(currentPokemon);
         renderPokemonInfo();
-
     }
 }
 
@@ -55,15 +54,16 @@ async function fetchFlavorText(pokemonId) {
 }
 
 
-function renderPokemonInfo() {
+function renderPokemonInfo(filteredpokemon) {
+   
 
-    let PokeId = '#' + currentPokemon['id'];
-    let name = currentPokemon['name'];
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
-    let category = currentPokemon['types'][0]['type']['name'];
-
-    checkSpecialCategory(PokeId, name, image, category)
+        let PokeId = '#' + currentPokemon['id'];
+        let name = currentPokemon['name'];
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
+        let category = currentPokemon['types'][0]['type']['name'];
+        checkSpecialCategory(PokeId, name, image, category)
+    
 }
 
 function checkSpecialCategory(PokeId, name, image, category) {
@@ -82,7 +82,6 @@ function generatePokeCard(PokeId, name, image, category, specialCategory) {
     let backgroundColor = setBackgroundcolor(category);
     let j = currentPokemon['id'];
     let i = PokeId;
-
     let specialCategoryContainer = generateSpecialCategoryContainer(specialCategory);
 
     document.getElementById('pokecard-main').innerHTML +=
@@ -98,9 +97,8 @@ function generatePokeCard(PokeId, name, image, category, specialCategory) {
                 <div id="pokemon-image-container" class="usez-index">
                 <img id='pokemonImage' src="${image}">
                 </div>
-                <img class="black-pokeball" src=./img/pokeball.png>
-            </div>
-           
+                <img class="black-pokeball" src=./img/pokeball.png> <!--https://www.flaticon.com/de/kostenloses-icon/pokeball_692557-->
+            </div>   
      </div>
 `;
 }
@@ -112,7 +110,6 @@ function generateSpecialCategoryContainer(specialCategory) {
         return '';
     }
 }
-
 
 function setBackgroundcolor(category) {
     switch (category) {
@@ -198,7 +195,6 @@ function setCharactertraits(type) {
     }
 }
 
-
 function openCardDetails(j) {
     currentPokemonIndex = j;/* nimmt Index des aktuellen Pokemons an*/
     document.getElementById('popup-card').classList.remove("d-none");
@@ -209,7 +205,6 @@ function openCardDetails(j) {
 }
 
 
-
 function generateDetailCard(j) {
     let pokemon = allPokemons[j - 1]; /*die ID des Pokemons ist 1 Wert grö0er als die Stelle des Pokemons im Array*/
     let i = '#' + pokemon['id'];
@@ -218,16 +213,14 @@ function generateDetailCard(j) {
 
     let DetailDescription = getFlavorText(pokemon["id"]);/*ruft Beschreibung ab*/
 
-
     let DetailfirstAbility = pokemon['abilities'][0]['ability']['name'];
     let DetailsecondAbility = checkDetailSecondAbility(pokemon)
-
     let DetailName = capitalizeFirstLetter(pokemon['name']);
     let DetailImage = pokemon['sprites']['other']['official-artwork']['front_default'];
-
     let showBackArrow = checkShowBackArrow(j);
 
-
+    let height = pokemon['height'];
+    let weight = pokemon['weight'];
 
     return /*html*/`
 <div id='Detail-Main-Container${j}' class="Detail-Main-Container" style="background-color: ${backgroundColor};">
@@ -245,7 +238,7 @@ function generateDetailCard(j) {
         <div class="Detail-Image-Container">
                  <img class="Detail-Pokemon-Image" src="${DetailImage}">
               </div>
-              <img class="Detail-Black-Pokeball" src=./img/pokeball.png>
+              <img class="Detail-Black-Pokeball" src=./img/detail-pokeball.png>
   </div>
         <!--  Bottom of Pokemon Card  -->
     <div class="card-bottom">
@@ -256,26 +249,32 @@ function generateDetailCard(j) {
             <!--  Information about Pokemon -->
         <div class="information-container">
               <div class="navigation-container">
-                <a>About</a>
-                <a>Stats</a>
-                <a>Evolution</a>
+                <a onclick='renderAbout(${j})'class="link">About</a>
+                <a onclick='renderStats(${j})' class="link">Stats</a>
+                <a onclick='renderEvolution(${j}' class="link">Evolution</a>
               </div>
             <!--  Information-Text  -->
              <div id='information-text-container'>
-                        <div class="about">
-                         <div class="description">
-                        ${DetailDescription}
-                         </div>
-                         <div class="height-section"></div>
-                         <div class="weight-section"></div>
-                         <div class="abilities-section"></div>
-
+                    <div class="about">
+                          <div class="description">
+                          ${DetailDescription}
+                           </div>
+                        <div class="without-description-container">
+                             <div class="height-section d-flex jc-sb"><b>Height</b>
+                             <h5>${(height / 10).toFixed(1)} m</h5><!-- Darstellung in Metern, auf eine Dezimalstelle gerundet -->
+                             </div>
+                             <div class="weight-section d-flex jc-sb" ><b>Weight</b>
+                             <h5>${(weight / 10).toFixed(1)} kg</h5><!-- Darstellung in kg, auf eine Dezimalstelle gerundet -->
+                             </div>
+                             <div class="abilities-section d-flex jc-sb"><b>Abilities</b>
+                             <h5>${DetailfirstAbility}, ${DetailsecondAbility}</h5>
+                             </div>
                         </div>
+                    </div>
              </div>
         </div>
     </div>
 </div>  
-    
     `;
 }
 
@@ -287,8 +286,8 @@ function checkDetailSecondAbility(pokemon) {
     }
 }
 
-function checkShowBackArrow(index){
-    return index >1;
+function checkShowBackArrow(index) {
+    return index > 1;
 }
 
 function capitalizeFirstLetter(str) {
@@ -313,10 +312,6 @@ function getFlavorText(pokemonId) {/* die Funktion nimmt den Paramter -pokemonId
 }
 
 
-function closeDetailCard() {
-    document.getElementById('popup-card').classList.add("d-none");
-}
-
 function clickForward() {
     currentPokemonIndex++;
     if (currentPokemonIndex >= allPokemons.length) {
@@ -338,4 +333,100 @@ function clickBackward() {
         currentPokemonIndex = allPokemons.length - 1;
     }
     updateDetailCard();
+}
+
+function renderStats(j) {
+    let textContainer = document.getElementById('information-text-container');
+    textContainer.innerHTML = '';
+    let pokemon = allPokemons[j - 1];
+
+    textContainer.innerHTML += generateStats(pokemon);
+}
+
+function generateStats(pokemon) {
+    let category = pokemon['types'][0]['type']['name'];
+    return /*html*/`
+        <div class="stats">
+            <span class="stat-name">Hp</span>
+            <span class="stat-value">${pokemon.stats[0].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+               <div class="progress-bar" style="width: ${pokemon.stats[0].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               </div>
+            </div>
+        </div>
+        <div class="stats">
+        <span class="stat-name">Attack</span>
+            <span class="stat-value">${pokemon.stats[1].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: ${pokemon.stats[1].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+                </div>
+            </div>
+        </div>
+        <div class="stats">    
+        <span class="stat-name">Defense</span>
+            <span class="stat-value">${pokemon.stats[2].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: ${pokemon.stats[2].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+                </div>
+            </div>
+        </div>
+        <div class="stats"> 
+        <span class="stat-name">Special-Attack</span>
+            <span class="stat-value">${pokemon.stats[3].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+               <div class="progress-bar" style="width: ${pokemon.stats[3].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               </div>
+            </div>
+        </div>
+        <div class="stats">
+        <span class="stat-name">Special-Defense</span>
+            <span class="stat-value">${pokemon.stats[4].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+               <div class="progress-bar" style="width: ${pokemon.stats[4].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               </div>
+            </div>
+        </div>
+        <div class="stats">
+        <span class="stat-name">Speed</span>
+            <span class="stat-value">${pokemon.stats[5].base_stat}</span>
+            <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+               <div class="progress-bar" style="width: ${pokemon.stats[5].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               </div>
+            </div>
+        </div>
+    `;
+}
+
+function calculatePercentage(value) {
+    const maxValue = 100;
+    return Math.floor((value / maxValue) * 100);
+}
+
+function renderAbout() {
+    let textContainer = document.getElementById('information-text-container');
+    textContainer.innerHTML = '';
+    updateDetailCard();
+}
+
+
+
+
+function filterPokemons() {
+    let search = document.getElementById('formControlDefault').value.toLowerCase();
+    filteredPokemons = allPokemons.filter(pokemon => pokemon.name.toLowerCase().startsWith(search));
+    renderFilteredPokemons(filteredPokemons);
+}
+
+function renderFilteredPokemons(filteredPokemons) {
+    let mainView = document.getElementById('pokecard-main');
+    mainView.innerHTML = '';
+
+    for (let j = 0; j < filteredPokemons.length; j++) {
+        let filteredpokemon = filteredPokemons[j];
+        renderPokemonInfo(filteredpokemon);
+    }
+}
+
+function closeDetailCard() {
+    document.getElementById('popup-card').classList.add("d-none");
 }

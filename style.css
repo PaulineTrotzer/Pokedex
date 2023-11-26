@@ -7,7 +7,7 @@
 }
 
 body {
-  background-image: url("/img/wallpaper.jpg"); /*https://pixabay.com/de/illustrations/pokemon-planet-smartphone-weltraum-1619924/*/
+  background-image: url("./img/wallpaper.jpg"); /*https://pixabay.com/de/illustrations/pokemon-planet-smartphone-weltraum-1619924/*/
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -50,6 +50,11 @@ h1 {
   margin-block-end: 0;
   font-size: 23px !important;
   color: white !important;
+}
+
+h5 {
+  font-weight: 300 !important;
+  font-size: 16px !important;
 }
 
 #pokecard-main {
@@ -132,6 +137,8 @@ h1 {
 #pokemonImage {
   width: 150px;
   height: 150px;
+  position: relative;
+  z-index: 2;
 }
 
 /*a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Freepik - Flaticon*/
@@ -143,13 +150,6 @@ h1 {
   width: 90%;
 }
 
-.info-container {
-  background-color: whitesmoke;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-  /*margin-top: -40px;*/
-  min-height: 100px;
-}
 
 /* Styles for ColorTags - Category - Container*/
 
@@ -205,6 +205,7 @@ h1 {
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100;
 }
 
 .Detail-Main-Container {
@@ -246,7 +247,6 @@ h1 {
   gap: 10px;
 }
 
-
 .abilities {
   font-size: 22px;
   font-weight: 500;
@@ -259,25 +259,21 @@ h1 {
   color: white;
 }
 
-
 .Detail-Image-Container {
   position: relative;
-  z-index: 2;
 }
 
 .Detail-Pokemon-Image {
   width: 450px;
 }
 
-
 .Detail-Black-Pokeball {
   opacity: 0.2;
   position: absolute;
   width: 300px;
   left: -160px;
-  bottom: 150px;
+  bottom: 233px;
 }
-
 
 .description {
   background-color: lightgrey;
@@ -288,7 +284,6 @@ h1 {
   font-weight: 400;
   font-style: italic;
 }
-
 
 .close-container {
   display: flex;
@@ -318,10 +313,63 @@ h1 {
 .navigation-container {
   display: flex;
   justify-content: space-evenly;
+  margin-bottom: 26px;
+}
+
+.without-description-container {
+  padding: 13px 40px;
+}
+
+.link {
+  text-decoration: none !important;
+  cursor: pointer;
+  font-weight: 500 !important;
+  color: black;
+}
+
+.link:hover {
+  background-color: rgb(242, 234, 234);
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.information-container {
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+  margin-bottom: 7px;
+}
+
+.stat-name {
+  width: 250px;
+  font-weight: 550;
+  font-size: 14px;
+}
+
+.stat-value {
+  text-align: right;
+  font-size: 14px;
+  width: 45px;
+}
+
+.bar-height-width{
+  height: 20px !important;
+  width: 100%;
 }
 
 .d-flex {
   display: flex;
+}
+
+.jc-sb {
+  justify-content: space-between;
 }
 
 .d-none {
