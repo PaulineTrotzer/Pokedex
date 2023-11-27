@@ -1,13 +1,5 @@
-function checkPokemontype(){
-    let x = currentPokemon['types'][0]['type']['name'];
-    return x;
-    
-}
-
-
-
-function findColor(type) {
-    switch (type) {
+function setBackgroundcolor(category) {
+    switch (category) {
         case 'normal':
             return '#9fa0a8';
         case 'fire':
@@ -50,45 +42,43 @@ function findColor(type) {
 }
 
 
-function findColorTag(type) {
+function setCharactertraits(type) {
     switch (type) {
         case 'normal':
-            return '#8d8e96';
+            return 'normal-background-color';
         case 'fire':
-            return '#fd6f0a';
+            return 'fire-background-color';
         case 'water':
-            return '#3d7ebf';
+            return 'water-background-color';
         case 'electric':
-            return '#ebce17';
+            return 'electric-background-color';
         case 'grass':
-            return '#55984f';
+            return 'grass-background-color';
         case 'ice':
-            return '#55b0a9';
+            return 'ice-background-color';
         case 'fighting':
-            return '#bd3b57';
+            return 'fighting-background-color';
         case 'poison':
-            return '#9750bf';
+            return 'poison-background-color';
         case 'ground':
-            return '#c56e3f';
+            return 'ground-background-color';
         case 'flying':
-            return '#6987b2';
+            return 'flying-background-color';
         case 'psychic':
-            return '#d85456';
+            return 'psychic-background-color';
         case 'bug':
-            return '#7fa12f';
+            return 'bug-background-color';
         case 'rock':
-            return '#a49276';
+            return 'rock-background-color';
         case 'ghost':
-            return '#455196';
+            return 'ghost-background-color';
         case 'dragon':
-            return '#0b60aa';
+            return 'dragon-background-color';
         case 'dark':
-            return '#504f54';
+            return 'dark-background-color';
         case 'steel':
-            return '#3c738c';
+            return 'steel-background-color';
         case 'fairy':
-            return '#d85ebe';
-        default:
-            return '#6b6b6b';
+            return 'fairy-background-color';
     }
 }
