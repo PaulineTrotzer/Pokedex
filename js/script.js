@@ -170,7 +170,7 @@ function generateDetailCard(j) {
               <div class="navigation-container">
                 <a onclick='renderAbout(${j})'class="link">About</a>
                 <a onclick='renderStats(${j})' class="link">Stats</a>
-                <a onclick='renderEvolution(${j}' class="link">Evolution</a>
+                <a onclick='renderEvolution(${j})' class="link">Evolution</a>
               </div>
             <!--  Information-Text  -->
              <div id='information-text-container'>
