@@ -41,6 +41,7 @@ async function loadPokemon() {
         console.log('loaded Pokemon', currentPokemon);
 
         await fetchFlavorText(i);/* ruft die Beschreibung für das aktuelle Pokemon ab - anderes 'Server-Array, i gibt jeweiliges Pokemon weiter */
+        await renderEvolutionChain(i);
 
         allPokemons.push(currentPokemon);
         renderPokemonInfo(currentPokemon);
@@ -56,8 +57,10 @@ async function fetchFlavorText(pokemonId) {
 }
 
 
-function renderPokemonInfo(currentPokemon,filteredpokemon) {
-    currentPokemon = filteredpokemon;
+function renderPokemonInfo(filteredpokemon) {
+    if(filteredpokemon) {
+        currentPokemon = filteredpokemon;
+    }
 
     let PokeId = '#' + currentPokemon['id'];
     let name = currentPokemon['name'];
@@ -170,7 +173,7 @@ function generateDetailCard(j) {
               <div class="navigation-container">
                 <a onclick='renderAbout(${j})'class="link">About</a>
                 <a onclick='renderStats(${j})' class="link">Stats</a>
-                <a onclick='renderEvolution(${j})' class="link">Evolution</a>
+                <a onclick='renderEvolutionChain(${j})' class="link">Evolution</a>
               </div>
             <!--  Information-Text  -->
              <div id='information-text-container'>
