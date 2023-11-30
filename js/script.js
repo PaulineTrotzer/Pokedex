@@ -6,7 +6,6 @@ let currentPokemonIndex = 0;
 let filteredPokemons = [];
 
 
-
 function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich 1 ist*/
     return index !== 1;
 }
@@ -41,7 +40,7 @@ async function loadPokemon() {
         console.log('loaded Pokemon', currentPokemon);
 
         await fetchFlavorText(i);/* ruft die Beschreibung für das aktuelle Pokemon ab - anderes 'Server-Array, i gibt jeweiliges Pokemon weiter */
-        await renderEvolutionChain(i);
+        await fetchEvolutionChain(i);
 
         allPokemons.push(currentPokemon);
         renderPokemonInfo(currentPokemon);
@@ -173,7 +172,7 @@ function generateDetailCard(j) {
               <div class="navigation-container">
                 <a onclick='renderAbout(${j})'class="link">About</a>
                 <a onclick='renderStats(${j})' class="link">Stats</a>
-                <a onclick='renderEvolutionChain(${j})' class="link">Evolution</a>
+                <a onclick='showEvolutions(${j})' class="link">Evolution</a>
               </div>
             <!--  Information-Text  -->
              <div id='information-text-container'>
