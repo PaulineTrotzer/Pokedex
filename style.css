@@ -45,6 +45,16 @@ body {
   margin-right: 28px;
 }
 
+.form-control {
+  text-align: center;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+}
+
+.form-control::placeholder {
+  font-size: 17px;
+}
+
 h1 {
   margin-block-start: 0;
   margin-block-end: 0;
@@ -54,7 +64,7 @@ h1 {
 
 h5 {
   font-weight: 300 !important;
-  font-size: 16px !important;
+  font-size: 18px !important;
 }
 
 #pokecard-main {
@@ -62,6 +72,7 @@ h5 {
   flex-wrap: wrap;
   color: white;
   display: flex;
+  justify-content: center;
   padding: 18px;
   border-radius: 20px;
   box-shadow: inset 0px 5px 10px 0px rgba(255, 255, 255, 0.7);
@@ -139,6 +150,7 @@ h5 {
   height: 150px;
   position: relative;
   z-index: 2;
+  object-fit: contain;
 }
 
 /*a href="https://www.flaticon.com/de/kostenlose-icons/pokemon" title="pokémon Icons">Pokémon Icons erstellt von Freepik - Flaticon*/
@@ -149,7 +161,6 @@ h5 {
   position: absolute;
   width: 90%;
 }
-
 
 /* Styles for ColorTags - Category - Container*/
 
@@ -214,7 +225,7 @@ h5 {
   flex-direction: column;
   justify-content: space-between;
   width: 50vw;
-  height: 85vh;
+  height: 100vh;
   padding: 14px;
   border: 2px solid;
   border-radius: 20px;
@@ -244,16 +255,20 @@ h5 {
   flex-direction: row-reverse;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px;
+  gap: 51px;
+}
+
+b {
+  font-size: 18px;
 }
 
 .abilities {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   border: 2px solid;
   border-radius: 5px;
   border-color: black;
-  padding: 3px;
+  padding: 4px;
   width: 122px;
   text-align: center;
   color: white;
@@ -261,6 +276,10 @@ h5 {
 
 .Detail-Image-Container {
   position: relative;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .Detail-Pokemon-Image {
@@ -270,9 +289,10 @@ h5 {
 .Detail-Black-Pokeball {
   opacity: 0.2;
   position: absolute;
-  width: 300px;
-  left: -160px;
-  bottom: 233px;
+  width: 400px;
+  left: -30px;
+  bottom: -157px;
+  z-index: -1;
 }
 
 .description {
@@ -302,6 +322,8 @@ h5 {
   flex-direction: column;
   background-color: whitesmoke;
   border-radius: 5px;
+  position: relative;
+  z-index: 50;
 }
 
 .back-forward-container {
@@ -325,6 +347,7 @@ h5 {
   cursor: pointer;
   font-weight: 500 !important;
   color: black;
+  font-size: 19px;
 }
 
 .link:hover {
@@ -336,6 +359,10 @@ h5 {
 .information-container {
   padding: 0 20px;
   margin-bottom: 10px;
+}
+
+#information-text-container {
+  height: 190px;
 }
 
 .stats {
@@ -350,28 +377,191 @@ h5 {
 .stat-name {
   width: 250px;
   font-weight: 550;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .stat-value {
   text-align: right;
-  font-size: 14px;
+  font-size: 15px;
   width: 45px;
 }
 
-.bar-height-width{
+.bar-height-width {
   height: 20px !important;
   width: 100%;
+}
+
+.listed-evolutions-container {
+  padding-top: 25px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.evolution-container {
+  display: flex;
+  flex-direction: column-reverse;
+  text-align: center;
+  cursor: pointer;
+}
+
+.evolution-name:hover {
+  transform: scale(1.1); /* oder andere Transformationen */
+}
+
+.evolution-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+img {
+  width: 108px;
 }
 
 .d-flex {
   display: flex;
 }
 
-.jc-sb {
+.jc-resp {
   justify-content: space-between;
 }
 
 .d-none {
   display: none;
+}
+
+/*media-query für main-ansicht*/
+@media (max-width: 650px) {
+  .header {
+    padding: 27px;
+  }
+  .name-logo-container {
+    flex-direction: column;
+  }
+  .page-title {
+    font-size: 32px;
+  }
+  .pokeball-color {
+    width: 57px;
+  }
+}
+
+@media (max-width: 500px) {
+  .single-pokeCard {
+    width: 280px;
+  }
+  .header {
+    padding: 20px;
+  }
+  .name-logo-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .page-title {
+    font-size: 30px;
+  }
+  .pokeball-color {
+    width: 52px;
+  }
+  .form-control {
+    font-size: 16px;
+    padding: 2px !important;
+  }
+  .form-control::placeholder {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    padding: 16px;
+  }
+  .page-title {
+    font-size: 25px;
+  }
+  .pokeball-color {
+    width: 50px;
+  }
+}
+
+@media (max-width: 380px) {
+  .single-pokeCard {
+    width: 275px;
+  }
+  #pokemonImage {
+    width: 132px;
+  }
+  .black-pokeball {
+    width: 88%;
+  }
+
+  .form-control::placeholder {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .single-pokeCard {
+    width: 253px;
+  }
+  h1 {
+    font-size: 19px !important;
+  }
+  #pokemonImage {
+    width: 100px;
+    height: 100px;
+  }
+  .spc-name-and-category-container {
+    margin-top: -10px;
+    width: 104px;
+  }
+  .category-container {
+    font-size: 12px !important;
+  }
+  .black-pokeball {
+    width: 88%;
+    top: -10px;
+    left: 100px;
+  }
+  .name-logo-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .page-title {
+    font-size: 22px;
+  }
+  .pokeball-color {
+    width: 38px;
+  }
+  .header {
+    padding: 14px;
+  }
+  .form-control {
+    padding: 2px !important;
+    font-size: 14px !important;
+    margin-top: 33px;
+  }
+  .form-control::placeholder {
+    font-size: 13px !important;
+  }
+  .form-outline {
+    margin-right: 18px;
+  }
+}
+
+/*media-query detail-ansichten*/
+@media (max-width: 1500px) {
+  .Detail-Black-Pokeball {
+    width: 386px;
+    left: -70px;
+    bottom: -146px;
+  }
+}
+@media (max-width: 1150px) {
+  .Detail-PokeName-Categories {
+    gap: 36px;
+  }
+  .Detail-Black-Pokeball {
+    width: 376px;
+    bottom: -133px;
+  }
 }

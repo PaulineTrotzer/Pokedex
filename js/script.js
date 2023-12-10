@@ -1,6 +1,6 @@
 let currentPokemon;
 let allPokemons = [];
-let limitedPokemon = 7;
+let limitedPokemon = 51;
 let desc_array = []; /*leeres Array für Pokemon-Description*/
 let currentPokemonIndex = 0;
 let filteredPokemons = [];
@@ -156,7 +156,7 @@ function generateDetailCard(j) {
             ${DetailsecondAbility ? `<h2 class="abilities ${setCharactertraits(DetailfirstCategory)}">${DetailsecondAbility}</h2>` : ''}
             <h2 id='Detail-Pokemon-Name'>${DetailName}</h2>
         </div>
-        <div class="Detail-Image-Container">
+        <div id="Detail-Image-Container" class="Detail-Image-Container">
                  <img class="Detail-Pokemon-Image" src="${DetailImage}">
               </div>
               <img class="Detail-Black-Pokeball" src=./img/detail-pokeball.png>
@@ -348,7 +348,12 @@ function renderFilteredPokemons(filteredPokemons) {
 }
 
 function closeDetailCard() {
+    const detailMainContainerId = `Detail-Main-Container${currentPokemonIndex}`;
+    const detailMainContainer = document.getElementById(detailMainContainerId);
+
+    if (detailMainContainer) {
+        detailMainContainer.innerHTML = '';
+    }
+
     document.getElementById('popup-card').classList.add("d-none");
 }
-
-
