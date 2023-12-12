@@ -1,7 +1,7 @@
 let currentPokemon;
 let allPokemons = [];
 let limitedPokemon = 51;
-let offsetNumber = 0;
+let offset = 0;
 let desc_array = []; /*leeres Array für Pokemon-Description*/
 let currentPokemonIndex = 0;
 let filteredPokemons = [];
@@ -381,4 +381,9 @@ function renderFilteredPokemons(filteredPokemons) {
 
 function closeDetailCard() {
     document.getElementById('popup-card').classList.add("d-none");
+    document.getElementById('Detail-Image-Pokemon').innerHTML = '';
+
 }
+
+await fetchFlavorText(i);/* ruft die Beschreibung für das aktuelle Pokemon ab - anderes 'Server-Array, i gibt jeweiliges Pokemon weiter */
+await fetchEvolutionChain(i);

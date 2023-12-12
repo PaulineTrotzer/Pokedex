@@ -4,6 +4,13 @@ let limitedPokemon = 51;
 let desc_array = []; /*leeres Array für Pokemon-Description*/
 let currentPokemonIndex = 0;
 let filteredPokemons = [];
+let offsetNumber = 0;
+let loadingMorePokemons = false;
+let loadedPokemonsCount = 0;
+const batchSize = 20;
+let allListedPokemons = [];
+
+
 
 
 function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich 1 ist*/
@@ -13,6 +20,7 @@ function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich
 async function init() {
     includeHTML();
     await loadPokemon();
+    fetchAllPokemonList();
 
     document.getElementById('formControlDefault').addEventListener('input', filterPokemons);
 }
@@ -31,38 +39,107 @@ async function includeHTML() {
     }
 }
 
+async function fetchAllPokemonList() {
+    let listURL = 'http://pokeapi.co/api/v2/pokemon/?limit=811';
+    let listResp = await fetch(listURL);
+    let list_json = await listResp.json();
 
-async function loadPokemon() {
-    for (let i = 1; i < limitedPokemon; i++) {
-        let url = `https://pokeapi.co/api/v2/pokemon/${i}`;
-        let response = await fetch(url);
-        currentPokemon = await response.json();
-        console.log('loaded Pokemon', currentPokemon);
+    // Extract results from each page and concatenate into a single array
+    allListedPokemons = list_json.results;
 
-        await fetchFlavorText(i);/* ruft die Beschreibung für das aktuelle Pokemon ab - anderes 'Server-Array, i gibt jeweiliges Pokemon weiter */
-        await fetchEvolutionChain(i);
+    console.log('hier die Liste', allListedPokemons);
+}
+
+
+async function loadPokemon(offset) {
+    const limit = 20;
+    const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        for (const pokemon of data.results) {
+            const pokemonUrl = pokemon.url;
+            const pokemonResponse = await fetch(pokemonUrl);
+            const currentPokemon = await pokemonResponse.json();
+
+            await fetchFlavorText(currentPokemon.id);
+            await fetchEvolutionChain(currentPokemon.id);
+
+            allPokemons.push(currentPokemon);
+            renderPokemonInfo(currentPokemon);
+            loadedPokemonsCount++;
+
+            if (loadedPokemonsCount === 20) {
+                loadedPokemonsCount = 0;
+            }
+        }
+    } finally {
+        // Die loading-Variable wird nicht mehr benötigt
+    }
+}
+
+
+
+window.addEventListener('scroll', async function () {
+    if (loadingMorePokemons) {
+        return;
+    }
+
+    const lastPokemonCard = document.querySelector('.single-pokeCard:last-child');
+    const lastPokemonCardOffset = lastPokemonCard.offsetTop + lastPokemonCard.clientHeight;
+    const pageOffset = window.pageYOffset + window.innerHeight;
+
+    if (pageOffset > lastPokemonCardOffset - 200) { // Trigger loading when 200 pixels from the bottom of the last card
+        loadingMorePokemons = true;
+        offsetNumber += batchSize;
+
+        try {
+            await loadMorePokemons(offsetNumber, batchSize);
+        } finally {
+            loadingMorePokemons = false;
+        }
+    }
+});
+
+async function loadMorePokemons(offset, limit) {
+    const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    for (const pokemon of data.results) {
+        const pokemonUrl = pokemon.url;
+        const pokemonResponse = await fetch(pokemonUrl);
+        const currentPokemon = await pokemonResponse.json();
+
+        await fetchFlavorText(currentPokemon.id);
+        await fetchEvolutionChain(currentPokemon.id);
 
         allPokemons.push(currentPokemon);
         renderPokemonInfo(currentPokemon);
     }
 }
 
+
 /* Funktion zum Abrufen der Beschreibung */
 async function fetchFlavorText(pokemonId) {
     let descUrl = `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`;
     let descResponse = await fetch(descUrl);
     let json_desc = await descResponse.json();
-    desc_array.push(json_desc);
+    desc_array[pokemonId - 1] = json_desc;  // Speichere die Beschreibung im Array
 }
 
 
 function renderPokemonInfo(filteredpokemon) {
-    if(filteredpokemon) {
+    if (filteredpokemon) {
         currentPokemon = filteredpokemon;
     }
 
     let PokeId = '#' + currentPokemon['id'];
+    console.log('aktuelle Id', PokeId);
     let name = currentPokemon['name'];
+    console.log('aktueller name');
     name = name.charAt(0).toUpperCase() + name.slice(1);
     let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
     let category = currentPokemon['types'][0]['type']['name'];
@@ -116,7 +193,7 @@ function generateSpecialCategoryContainer(specialCategory) {
 }
 
 
-function openCardDetails(j) {
+async function openCardDetails(j) {
     currentPokemonIndex = j;/* nimmt Index des aktuellen Pokemons an*/
     document.getElementById('popup-card').classList.remove("d-none");
     document.getElementById('popup-card').innerHTML += generateDetailCard(j);
@@ -156,10 +233,10 @@ function generateDetailCard(j) {
             ${DetailsecondAbility ? `<h2 class="abilities ${setCharactertraits(DetailfirstCategory)}">${DetailsecondAbility}</h2>` : ''}
             <h2 id='Detail-Pokemon-Name'>${DetailName}</h2>
         </div>
-        <div id="Detail-Image-Container" class="Detail-Image-Container">
+        <div class="Detail-Image-Container">
                  <img class="Detail-Pokemon-Image" src="${DetailImage}">
               </div>
-              <img class="Detail-Black-Pokeball" src=./img/detail-pokeball.png>
+         
   </div>
         <!--  Bottom of Pokemon Card  -->
     <div class="card-bottom">
@@ -181,13 +258,13 @@ function generateDetailCard(j) {
                           ${DetailDescription}
                            </div>
                         <div class="without-description-container">
-                             <div class="height-section d-flex jc-sb"><b>Height</b>
+                             <div class="height-section d-flex horizontal-position"><b>Height</b>
                              <h5>${(height / 10).toFixed(1)} m</h5><!-- Darstellung in Metern, auf eine Dezimalstelle gerundet -->
                              </div>
-                             <div class="weight-section d-flex jc-sb" ><b>Weight</b>
+                             <div class="weight-section d-flex horizontal-position" ><b>Weight</b>
                              <h5>${(weight / 10).toFixed(1)} kg</h5><!-- Darstellung in kg, auf eine Dezimalstelle gerundet -->
                              </div>
-                             <div class="abilities-section d-flex jc-sb"><b>Abilities</b>
+                             <div class="abilities-section d-flex horizontal-position"><b>Abilities</b>
                              <h5>${DetailfirstAbility}, ${DetailsecondAbility}</h5>
                              </div>
                         </div>
@@ -198,6 +275,12 @@ function generateDetailCard(j) {
 </div>  
     `;
 }
+
+function showEvolutions(j) {
+    filterEvolutions(j);
+}
+
+
 
 function checkDetailSecondAbility(pokemon) {
     if (pokemon['abilities'].length > 1) {
@@ -221,8 +304,8 @@ function encodeFlavorText(flavorText) {
 }
 
 
-function getFlavorText(pokemonId) {/* die Funktion nimmt den Paramter -pokemonId- entgegen, um auf das entsprechende Pokemon-Objekt zuzugreifen*/
-    const pokemonDesc = desc_array[pokemonId - 1];/*die Variable greift auf das Pokemon-Objekt im desc_array zu*/
+function getFlavorText(pokemonId) {
+    const pokemonDesc = desc_array[pokemonId - 1];
     if (pokemonDesc && pokemonDesc["flavor_text_entries"]) {
         const filteredEntries = pokemonDesc["flavor_text_entries"].filter(entry => entry.language.name === "en");
         const flavorText = filteredEntries.length > 0 ? filteredEntries[0].flavor_text : "";
@@ -241,7 +324,7 @@ function clickForward() {
     updateDetailCard()
 }
 
-function updateDetailCard() {
+async function updateDetailCard() {
     if (!document.getElementById('popup-card').classList.contains("d-none")) {
         document.getElementById('popup-card').innerHTML = '';
         document.getElementById('popup-card').innerHTML = generateDetailCard(currentPokemonIndex);
@@ -332,7 +415,11 @@ function renderAbout() {
 
 function filterPokemons() {
     let search = document.getElementById('formControlDefault').value.toLowerCase();
-    filteredPokemons = allPokemons.filter(pokemon => pokemon.name.toLowerCase().startsWith(search));
+
+    // Filter allListedPokemons basierend auf dem Suchwert
+    filteredPokemons = allListedPokemons.filter(pokemon =>
+        pokemon.name.toLowerCase().includes(search)
+    );
 
     renderFilteredPokemons(filteredPokemons);
 }
@@ -343,17 +430,48 @@ function renderFilteredPokemons(filteredPokemons) {
 
     for (let i = 0; i < filteredPokemons.length; i++) {
         let filteredpokemon = filteredPokemons[i];
-        renderPokemonInfo(filteredpokemon);
+        PokemonInfoforFilter(filteredpokemon);
     }
 }
 
+async function PokemonInfoforFilter(filteredpokemon) {
+    // Extrahiere die Pokemon-ID aus der URL
+    let pokemonId = extractPokemonId(filteredpokemon.url);
+
+    // Überprüfe, ob die ID gültig ist
+    if (pokemonId !== null) {
+        let individualLink = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/`;
+        let ind_resp = await fetch(individualLink);
+        let searchedPokemon = await ind_resp.json();
+
+        let name = searchedPokemon['forms'][0]['name']; // Beachten Sie den Index 0 für den Namen
+        console.log('Name ist', name);
+        let id = pokemonId;
+        console.log('hier die filterId', pokemonId);
+        let profile_image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`
+        console.log(profile_image);
+    } else {
+        console.error('Ungültige Pokemon-URL:', filteredpokemon.url);
+    }
+}
+
+function extractPokemonId(url) {
+    const match = url.match(/\/(\d+)\/$/);
+    
+    // Falls eine Übereinstimmung gefunden wurde, gibt die extrahierte ID zurück, ansonsten null
+    return match ? parseInt(match[1]) : null;
+}
+
 function closeDetailCard() {
+    clearPokemonCard();
+    document.getElementById('popup-card').classList.add("d-none");
+}
+
+function clearPokemonCard() {
     const detailMainContainerId = `Detail-Main-Container${currentPokemonIndex}`;
     const detailMainContainer = document.getElementById(detailMainContainerId);
 
     if (detailMainContainer) {
         detailMainContainer.innerHTML = '';
     }
-
-    document.getElementById('popup-card').classList.add("d-none");
 }

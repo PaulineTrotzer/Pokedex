@@ -41,6 +41,10 @@ body {
   width: 68px;
 }
 
+input{
+  text-align: left !important;
+}
+
 .form-outline {
   margin-right: 28px;
 }
@@ -64,7 +68,7 @@ h1 {
 
 h5 {
   font-weight: 300 !important;
-  font-size: 18px !important;
+  font-size: 16px !important;
 }
 
 #pokecard-main {
@@ -99,7 +103,10 @@ h5 {
   color: black !important;
 }
 
-/*
+.single-pokeCard:hover .black-pokeball{
+  display: none;
+}
+
 .single-pokeCard:hover{
   transform: scale(0.98, 0.98);
   transition: 0.4s;
@@ -108,17 +115,14 @@ h5 {
   background-color: black !important;
   cursor: pointer;
 }
-*/
 
-/*
 .single-pokeCard:hover #pokemonImage{
   transform: scale(1.55, 1.55);
   transition: 0.4s;
   color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 
 }
-*/
-
 .category-container {
   border: 2px solid;
   border-radius: 5px;
@@ -224,14 +228,13 @@ h5 {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 50vw;
-  height: 100vh;
+  height: 685px;
+  width: 420px;
   padding: 14px;
   border: 2px solid;
   border-radius: 20px;
   border-color: #f3f5fa;
   box-shadow: inset 0px 0px 10px 0px rgba(255, 255, 255, 0.7);
-  overflow-y: scroll;
   background: white;
 }
 
@@ -243,11 +246,13 @@ h5 {
 
 #Detail-Pokemon-Name {
   margin-left: 8px;
+  font-size: 27px;
 }
 
 .card-top {
   background-color: whitesmoke;
   border-radius: 5px;
+  margin-bottom: 4px;
 }
 
 .Detail-PokeName-Categories {
@@ -255,35 +260,35 @@ h5 {
   flex-direction: row-reverse;
   justify-content: flex-end;
   align-items: center;
-  gap: 51px;
+  gap: 5px;
 }
 
 b {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .abilities {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   border: 2px solid;
   border-radius: 5px;
   border-color: black;
   padding: 4px;
-  width: 122px;
+  width: 103px;
   text-align: center;
   color: white;
+  margin-right: 2px;
 }
 
 .Detail-Image-Container {
   position: relative;
-  z-index: 2;
   overflow: hidden;
   display: flex;
   justify-content: center;
 }
 
 .Detail-Pokemon-Image {
-  width: 450px;
+  width: 220px;
 }
 
 .Detail-Black-Pokeball {
@@ -298,7 +303,7 @@ b {
 .description {
   background-color: lightgrey;
   margin: 10px;
-  padding: 10px;
+  padding: 3px;
   border-radius: 5px;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
@@ -311,7 +316,7 @@ b {
 }
 
 .icon-class {
-  width: 34px;
+  width: 26px;
   cursor: pointer;
   margin-top: 5px;
   margin-right: 5px;
@@ -339,7 +344,7 @@ b {
 }
 
 .without-description-container {
-  padding: 13px 40px;
+  margin-top: 23px;
 }
 
 .link {
@@ -347,7 +352,7 @@ b {
   cursor: pointer;
   font-weight: 500 !important;
   color: black;
-  font-size: 19px;
+  font-size: 18px;
 }
 
 .link:hover {
@@ -357,8 +362,7 @@ b {
 }
 
 .information-container {
-  padding: 0 20px;
-  margin-bottom: 10px;
+  padding: 0 9px;
 }
 
 #information-text-container {
@@ -421,7 +425,7 @@ img {
   display: flex;
 }
 
-.jc-resp {
+.horizontal-position {
   justify-content: space-between;
 }
 
@@ -549,19 +553,30 @@ img {
 }
 
 /*media-query detail-ansichten*/
-@media (max-width: 1500px) {
-  .Detail-Black-Pokeball {
-    width: 386px;
-    left: -70px;
-    bottom: -146px;
+@media (max-width: 435px) {
+  .abilities {
+    font-size: 16px;
+    width: 93px;
   }
+  .Detail-Pokemon-Image {
+    width: 180px;
+  }
+  .Detail-Main-Container {
+    height: 646px;
+    width: 320px;
+    padding: 10px;
+  }
+  .information-container {
+    padding: 0px 0px;
+    margin-bottom: 11px;
+  }
+  #information-text-container {
+    padding: 0 2px;
+  }
+  img{
+    width: 75px;
+  }
+  Detail-Pokemon-Name {
+    font-size: 22px;
 }
-@media (max-width: 1150px) {
-  .Detail-PokeName-Categories {
-    gap: 36px;
-  }
-  .Detail-Black-Pokeball {
-    width: 376px;
-    bottom: -133px;
-  }
 }
