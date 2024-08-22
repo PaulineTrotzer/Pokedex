@@ -18,7 +18,9 @@ async function fetchEvolutionChain(i) {
 
 async function filterEvolutions(j) {
     let evolutionChain = evolutionChains[j - 1];
-
+    if(j > loadedPokemonsCount){
+        await fetchEvolutionChain(j)
+    }
     let pokemon1 = evolutionChain['chain']['species']['name'];
     let speciesURL_pokemon1 = evolutionChain['chain']['species']['url'];//gesamteURL
     let pokemon1ID = extractPokemonID(speciesURL_pokemon1);
@@ -83,9 +85,9 @@ function generateEvolutions(pokemon1, image_pokemon1, pokemon1ID, firstEvolution
 }
 
 
-
 async function showPokemonDetails(currentPokemonIndex) {
-    if (currentPokemonIndex <= allPokemons.length) {
+    if (currentPokemonIndex <= loadedPokemonsCount.length) {
+        console.log('allP', allPokemons);
         openCardDetails(currentPokemonIndex);
         await updateDetailCard(currentPokemonIndex);
     } else {
@@ -106,11 +108,7 @@ async function loadSinglePokemon(pokemonId) {
     await fetchEvolutionChain(pokemonId);
 
     allPokemons[pokemonId - 1] = currentPokemon;
-
-    if (document.getElementById('formControlDefault').value.toLowerCase().length === 0 ||
-        currentPokemon.name.toLowerCase().startsWith(document.getElementById('formControlDefault').value.toLowerCase())) {
-        renderPokemonInfo(currentPokemon);
-    }
+    renderPokemonInfo(currentPokemon.id);
 }
 
 

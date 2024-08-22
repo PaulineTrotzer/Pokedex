@@ -9,18 +9,13 @@ let loadingMorePokemons = false;
 let loadedPokemonsCount = 0;
 const batchSize = 20;
 let allListedPokemons = [];
+let json_desc = [];
 
-
-
-
-function checkShowBackArrow(index) {/*gibt true zurück, wenn der Index ungleich 1 ist*/
-    return index !== 1;
-}
 
 async function init() {
     includeHTML();
     await loadPokemon();
-    fetchAllPokemonList();
+    await fetchAllPokemonList();
 
     document.getElementById('formControlDefault').addEventListener('input', filterPokemons);
 }
@@ -39,49 +34,42 @@ async function includeHTML() {
     }
 }
 
+
+async function loadPokemon(offset) {
+    const limit = 20;//constant limit of 20
+    const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;//vgl fetchAllPokemonList
+
+    const response = await fetch(url);
+    const data = await response.json();//name und url für 20 Pokemons
+
+    for (const pokemon of data.results) {//object with property .results// //const pokemon ist Schleifen-Variable und erhaält die properties von data.results//
+        const pokemonUrl = pokemon.url;//sheet für das einzelne Pokemon
+        const pokemonResponse = await fetch(pokemonUrl);
+        const currentPokemon = await pokemonResponse.json();// Festsetzung von currentPokemon
+        console.log('hier 1 P', currentPokemon);
+
+        await fetchFlavorText(currentPokemon.id);
+        await fetchEvolutionChain(currentPokemon.id);
+
+        allPokemons.push(currentPokemon);
+        renderPokemonInfo(currentPokemon.id);
+        loadedPokemonsCount++;
+    }
+}
+
 async function fetchAllPokemonList() {
-    let listURL = 'http://pokeapi.co/api/v2/pokemon/?limit=811';
+    let listURL = 'https://pokeapi.co/api/v2/pokemon/?limit=811';
     let listResp = await fetch(listURL);
     let list_json = await listResp.json();
 
     // Extract results from each page and concatenate into a single array
     allListedPokemons = list_json.results;
 
-    console.log('hier die Liste', allListedPokemons);
+    console.log('hier die Liste aller Pokemons', allListedPokemons);
 }
 
 
-async function loadPokemon(offset) {
-    const limit = 20;
-    const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        for (const pokemon of data.results) {
-            const pokemonUrl = pokemon.url;
-            const pokemonResponse = await fetch(pokemonUrl);
-            const currentPokemon = await pokemonResponse.json();
-
-            await fetchFlavorText(currentPokemon.id);
-            await fetchEvolutionChain(currentPokemon.id);
-
-            allPokemons.push(currentPokemon);
-            renderPokemonInfo(currentPokemon);
-            loadedPokemonsCount++;
-
-            if (loadedPokemonsCount === 20) {
-                loadedPokemonsCount = 0;
-            }
-        }
-    } finally {
-        // Die loading-Variable wird nicht mehr benötigt
-    }
-}
-
-
-
+//durchgehen//
 window.addEventListener('scroll', async function () {
     if (loadingMorePokemons) {
         return;
@@ -103,6 +91,7 @@ window.addEventListener('scroll', async function () {
     }
 });
 
+
 async function loadMorePokemons(offset, limit) {
     const url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
     const response = await fetch(url);
@@ -117,7 +106,7 @@ async function loadMorePokemons(offset, limit) {
         await fetchEvolutionChain(currentPokemon.id);
 
         allPokemons.push(currentPokemon);
-        renderPokemonInfo(currentPokemon);
+        renderPokemonInfo(currentPokemon.id);
     }
 }
 
@@ -131,57 +120,57 @@ async function fetchFlavorText(pokemonId) {
 }
 
 
-function renderPokemonInfo(filteredpokemon) {
-    if (filteredpokemon) {
-        currentPokemon = filteredpokemon;
-    }
+async function renderPokemonInfo(pokemonId) {
+    let individualLink = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/`;
+    let ind_resp = await fetch(individualLink);
+    let currentPokemon = await ind_resp.json();
 
-    let PokeId = '#' + currentPokemon['id'];
-    console.log('aktuelle Id', PokeId);
-    let name = currentPokemon['name'];
-    console.log('aktueller name');
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    let image = currentPokemon['sprites']['other']['official-artwork']['front_default'];
-    let category = currentPokemon['types'][0]['type']['name'];
-    checkSpecialCategory(PokeId, name, image, category)
-
+    let name = currentPokemon['name']; // Beachten Sie den Index 0 für den Namen
+    let id = currentPokemon['id'];
+    let profile_image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`
+    let category = currentPokemon['types'][0]['type']['name']
+    checkSpecialCategory(currentPokemon, id, name, profile_image, category)
 }
 
-function checkSpecialCategory(PokeId, name, image, category) {
+
+function checkSpecialCategory(currentPokemon, id, name, profile_image, category) {
     let x = currentPokemon['types'].length;
     if (x > 1) {
-        let specialCategory = currentPokemon['types']['1']['type']['name'];
-        generatePokeCard(PokeId, name, image, category, specialCategory);
-
+        let specialCategory = currentPokemon['types'][1]['type']['name'];
+        generatePokeCard(id, name, profile_image, category, specialCategory);
     } else {
-        generatePokeCard(PokeId, name, image, category);
+        generatePokeCard(id, name, profile_image, category);
     }
 }
 
 
-function generatePokeCard(PokeId, name, image, category, specialCategory) {
+function generatePokeCard(id, name, profile_image, category, specialCategory) {
     let backgroundColor = setBackgroundcolor(category);
-    let j = currentPokemon['id'];
-    let i = PokeId;
+    let j = id
+    let i = '#' + id;
     let specialCategoryContainer = generateSpecialCategoryContainer(specialCategory);
 
-    document.getElementById('pokecard-main').innerHTML +=
-     /*html*/`
-     <div onclick="openCardDetails(${j})" id='single-pokeCard${j}' class="single-pokeCard" style="background-color:${backgroundColor};">
-            <div class="singlePokecard-id"><h5>${i}</h5></div>
-            <div class="spc-name-category-images-container">
-                <div class="spc-name-and-category-container">
-                    <h1 id='pokemonName'>${name}</h1>
-                    <div id='category' class="category-container ${setCharactertraits(category)}">${category}</div>
-                    ${specialCategoryContainer}
+    let existingCard = document.getElementById(`single-pokeCard${j}`);
+
+    if (!existingCard) {
+        document.getElementById('pokecard-main').innerHTML +=
+            /*html*/`
+            <div onclick="openCardDetails(${j})" id='single-pokeCard${j}' class="single-pokeCard" style="background-color:${backgroundColor};">
+                <div class="singlePokecard-id"><h5>${i}</h5></div>
+                <div class="spc-name-category-images-container">
+                    <div class="spc-name-and-category-container">
+                        <h1 id='pokemonName'>${name}</h1>
+                        <div id='category' class="category-container ${setCharactertraits(category)}">${category}</div>
+                        ${specialCategoryContainer}
+                    </div>
+                    <div id="pokemon-image-container" class="usez-index">
+                        <img id='pokemonImage' src="${profile_image}">
+                    </div>
+                    <img class="black-pokeball" src=./img/pokeball.png>
                 </div>
-                <div id="pokemon-image-container" class="usez-index">
-                <img id='pokemonImage' src="${image}">
-                </div>
-                <img class="black-pokeball" src=./img/pokeball.png> <!--https://www.flaticon.com/de/kostenloses-icon/pokeball_692557-->
-            </div>   
-     </div>
-`;
+            </div>
+        `;
+    }
 }
 
 function generateSpecialCategoryContainer(specialCategory) {
@@ -194,34 +183,54 @@ function generateSpecialCategoryContainer(specialCategory) {
 
 
 async function openCardDetails(j) {
-    currentPokemonIndex = j;/* nimmt Index des aktuellen Pokemons an*/
-    document.getElementById('popup-card').classList.remove("d-none");
-    document.getElementById('popup-card').innerHTML += generateDetailCard(j);
+    if (j > loadedPokemonsCount) {
+        await loadSinglePokemon(j)
+        document.getElementById('popup-card').classList.remove("d-none");
+        updateDetailCard(j);
 
-    const arrowcontainer = document.getElementById('arrow-container');
-    arrowcontainer.style.justifyContent = checkShowBackArrow(j) ? "space-between" : "flex-end";/*if true= space-between, sonst false = flex-end;*/
+    } else {
+        document.getElementById('popup-card').classList.remove("d-none");
+        await generateDetailCard(j);
+        await checkIfBackArrow(j);
+    }
 }
 
+async function checkIfBackArrow(pokemonId) {
+    let individualArrowContainer = document.getElementById(`backward-arrow${pokemonId}`);
 
-function generateDetailCard(j) {
-    let pokemon = allPokemons[j - 1]; /*die ID des Pokemons ist 1 Wert grö0er als die Stelle des Pokemons im Array*/
-    let i = '#' + pokemon['id'];
-    let DetailfirstCategory = pokemon['types'][0]['type']['name'];
-    let backgroundColor = setBackgroundcolor(DetailfirstCategory);
+    if (pokemonId > 1) {
+        individualArrowContainer.src = './img/arrow-long-left-icon.svg';
+        individualArrowContainer.classList.add('icon-class');
+        individualArrowContainer.addEventListener('click', () => clickBackward(pokemonId));
+        // RightArrowContainer.style = "icon-class"    onclick='clickBackward(${pokemonId})'//
+    }
+        if (pokemonId < 1) {
+            individualArrowContainer.src = '';
+        }
+    }
+   
 
-    let DetailDescription = getFlavorText(pokemon["id"]);/*ruft Beschreibung ab*/
+    async function generateDetailCard(pokemonId) {
+        const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
+        const response = await fetch(pokemonUrl);
+        const currentPokemon = await response.json();
 
-    let DetailfirstAbility = pokemon['abilities'][0]['ability']['name'];
-    let DetailsecondAbility = checkDetailSecondAbility(pokemon)
-    let DetailName = capitalizeFirstLetter(pokemon['name']);
-    let DetailImage = pokemon['sprites']['other']['official-artwork']['front_default'];
-    let showBackArrow = checkShowBackArrow(j);
+        let i = '#' + currentPokemon['id'];
+        let DetailfirstCategory = currentPokemon['types'][0]['type']['name'];
+        let backgroundColor = setBackgroundcolor(DetailfirstCategory);
 
-    let height = pokemon['height'];
-    let weight = pokemon['weight'];
+        let DetailDescription = await getFlavorText(pokemonId);/*ruft Beschreibung ab*/
 
-    return /*html*/`
-<div id='Detail-Main-Container${j}' class="Detail-Main-Container" style="background-color: ${backgroundColor};">
+        let DetailfirstAbility = currentPokemon['abilities'][0]['ability']['name'];
+        let DetailsecondAbility = checkDetailSecondAbility(currentPokemon)
+        let DetailName = capitalizeFirstLetter(currentPokemon['name']);
+        let DetailImage = currentPokemon['sprites']['other']['official-artwork']['front_default'];
+
+        let height = currentPokemon['height'];
+        let weight = currentPokemon['weight'];
+
+        document.getElementById('popup-card').innerHTML +=  /*html*/`
+<div id='Detail-Main-Container${pokemonId}' class="Detail-Main-Container" style="background-color: ${backgroundColor};">
         <!--  Top of Pokemon Card  -->
   <div class="card-top">
      <div onclick="closeDetailCard()" class="close-container">
@@ -241,15 +250,15 @@ function generateDetailCard(j) {
         <!--  Bottom of Pokemon Card  -->
     <div class="card-bottom">
             <div id='arrow-container' class="back-forward-container">
-            ${showBackArrow ? `<img onclick='clickBackward()'class="icon-class" src=./img/arrow-long-left-icon.svg>` : ''}
-                <img onclick='clickForward()' class="icon-class" src=./img/arrow-long-right-icon.svg>
+            <img src='' id="backward-arrow${pokemonId}">
+            <img onclick='clickForward(${pokemonId})' class="icon-class" src=./img/arrow-long-right-icon.svg>
             </div>
             <!--  Information about Pokemon -->
         <div class="information-container">
               <div class="navigation-container">
-                <a onclick='renderAbout(${j})'class="link">About</a>
-                <a onclick='renderStats(${j})' class="link">Stats</a>
-                <a onclick='showEvolutions(${j})' class="link">Evolution</a>
+                <a onclick='renderAbout(${pokemonId})'class="link">About</a>
+                <a onclick='renderStats(${pokemonId})' class="link">Stats</a>
+                <a onclick='showEvolutions(${pokemonId})' class="link">Evolution</a>
               </div>
             <!--  Information-Text  -->
              <div id='information-text-container'>
@@ -274,204 +283,207 @@ function generateDetailCard(j) {
     </div>
 </div>  
     `;
-}
+         await checkIfBackArrow(pokemonId);
 
-function showEvolutions(j) {
-    filterEvolutions(j);
-}
-
-
-
-function checkDetailSecondAbility(pokemon) {
-    if (pokemon['abilities'].length > 1) {
-        return pokemon['abilities'][1]['ability']['name'];
-    } else {
-        return null;
     }
-}
-
-function checkShowBackArrow(index) {
-    return index > 1;
-}
-
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function encodeFlavorText(flavorText) {
-    flavorText = flavorText.replace('POKéMON', 'Pokémon');
-    return flavorText;
-}
 
 
-function getFlavorText(pokemonId) {
-    const pokemonDesc = desc_array[pokemonId - 1];
-    if (pokemonDesc && pokemonDesc["flavor_text_entries"]) {
-        const filteredEntries = pokemonDesc["flavor_text_entries"].filter(entry => entry.language.name === "en");
-        const flavorText = filteredEntries.length > 0 ? filteredEntries[0].flavor_text : "";
-        const encodedFlavorText = encodeFlavorText(flavorText);
-        return encodedFlavorText;
+    function showEvolutions(j) {
+        filterEvolutions(j);
     }
-    return "";
-}
 
-
-function clickForward() {
-    currentPokemonIndex++;
-    if (currentPokemonIndex >= allPokemons.length) {
-        currentPokemonIndex = 0;
+    function checkDetailSecondAbility(pokemon) {
+        if (pokemon['abilities'].length > 1) {
+            return pokemon['abilities'][1]['ability']['name'];
+        } else {
+            return null;
+        }
     }
-    updateDetailCard()
-}
 
-async function updateDetailCard() {
-    if (!document.getElementById('popup-card').classList.contains("d-none")) {
-        document.getElementById('popup-card').innerHTML = '';
-        document.getElementById('popup-card').innerHTML = generateDetailCard(currentPokemonIndex);
+
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
-}
 
-function clickBackward() {
-    currentPokemonIndex--;
-    if (currentPokemonIndex < 0) {
-        currentPokemonIndex = allPokemons.length - 1;
+    function encodeFlavorText(flavorText) {
+        flavorText = flavorText.replace('POKéMON', 'Pokémon');
+        return flavorText;
     }
-    updateDetailCard();
-}
 
-function renderStats(j) {
-    let textContainer = document.getElementById('information-text-container');
-    textContainer.innerHTML = '';
-    let pokemon = allPokemons[j - 1];
+    async function getFlavorText(pokemonId) {
+        if (pokemonId > loadedPokemonsCount) {
+            await fetchFlavorText(pokemonId);
+        }
+        const pokemonDesc = desc_array[pokemonId - 1];
+        if (pokemonDesc && pokemonDesc["flavor_text_entries"]) {
+            const filteredEntries = pokemonDesc["flavor_text_entries"].filter(entry => entry.language.name === "en");
+            const flavorText = filteredEntries.length > 0 ? filteredEntries[0].flavor_text : "";
+            const encodedFlavorText = encodeFlavorText(flavorText);
+            return encodedFlavorText;
+        }
+        return "";
+    }
 
-    textContainer.innerHTML += generateStats(pokemon);
-}
+    async function clickForward(pokemonId) {
+        currentPokemonIndex = pokemonId;
+        currentPokemonIndex++;
+        await updateDetailCard(currentPokemonIndex);
+    }
 
-function generateStats(pokemon) {
-    let category = pokemon['types'][0]['type']['name'];
-    return /*html*/`
+    async function updateDetailCard(index) {
+        if (!document.getElementById('popup-card').classList.contains("d-none")) {
+            document.getElementById('popup-card').innerHTML = '';
+            document.getElementById('popup-card').innerHTML =  generateDetailCard(index);
+        }
+    }
+
+    async function clickBackward(pokemonId) {
+        currentPokemonIndex = pokemonId;
+        currentPokemonIndex--;
+        if (currentPokemonIndex < 0) {
+            currentPokemonIndex = allPokemons.length - 1;
+        }
+        await updateDetailCard(currentPokemonIndex);
+        await checkIfBackArrow(currentPokemonIndex);
+    }
+
+
+    async function renderStats(pokemonId) {
+        clearContainer();
+        const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
+        const response = await fetch(pokemonUrl);
+        const currentPokemon = await response.json();
+
+        if (pokemonId < loadedPokemonsCount) {
+            allPokemons[pokemonId - 1] = currentPokemon;
+        }
+        await generateStats(currentPokemon)
+    }
+
+    function clearContainer() {
+        let textContainer = document.getElementById('information-text-container');
+        textContainer.innerHTML = '';
+    }
+
+    async function generateStats(currentPokemon) {
+        let category = currentPokemon['types'][0]['type']['name'];
+
+        document.getElementById('information-text-container').innerHTML +=
+     /*html*/`
         <div class="stats">
             <span class="stat-name">Hp</span>
-            <span class="stat-value">${pokemon.stats[0].base_stat}</span>
+            <span class="stat-value">${currentPokemon['stats'][0].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-               <div class="progress-bar" style="width: ${pokemon.stats[0].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               <div class="progress-bar" style="width: ${currentPokemon.stats[0].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                </div>
             </div>
         </div>
         <div class="stats">
         <span class="stat-name">Attack</span>
-            <span class="stat-value">${pokemon.stats[1].base_stat}</span>
+            <span class="stat-value">${currentPokemon.stats[1].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: ${pokemon.stats[1].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+                <div class="progress-bar" style="width: ${currentPokemon.stats[1].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                 </div>
             </div>
         </div>
         <div class="stats">    
         <span class="stat-name">Defense</span>
-            <span class="stat-value">${pokemon.stats[2].base_stat}</span>
+            <span class="stat-value">${currentPokemon.stats[2].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: ${pokemon.stats[2].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+                <div class="progress-bar" style="width: ${currentPokemon.stats[2].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                 </div>
             </div>
         </div>
         <div class="stats"> 
         <span class="stat-name">Special-Attack</span>
-            <span class="stat-value">${pokemon.stats[3].base_stat}</span>
+            <span class="stat-value">${currentPokemon.stats[3].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-               <div class="progress-bar" style="width: ${pokemon.stats[3].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               <div class="progress-bar" style="width: ${currentPokemon.stats[3].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                </div>
             </div>
         </div>
         <div class="stats">
         <span class="stat-name">Special-Defense</span>
-            <span class="stat-value">${pokemon.stats[4].base_stat}</span>
+            <span class="stat-value">${currentPokemon.stats[4].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-               <div class="progress-bar" style="width: ${pokemon.stats[4].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               <div class="progress-bar" style="width: ${currentPokemon.stats[4].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                </div>
             </div>
         </div>
         <div class="stats">
         <span class="stat-name">Speed</span>
-            <span class="stat-value">${pokemon.stats[5].base_stat}</span>
+            <span class="stat-value">${currentPokemon.stats[5].base_stat}</span>
             <div class="progress-hide progress bar-height-width" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-               <div class="progress-bar" style="width: ${pokemon.stats[5].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
+               <div class="progress-bar" style="width: ${currentPokemon.stats[5].base_stat}%; height: 20px; background-color:${setBackgroundcolor(category)};"></div>
                </div>
             </div>
         </div>
     `;
-}
-
-function calculatePercentage(value) {
-    const maxValue = 100;
-    return Math.floor((value / maxValue) * 100);
-}
-
-function renderAbout() {
-    let textContainer = document.getElementById('information-text-container');
-    textContainer.innerHTML = '';
-    updateDetailCard();
-}
-
-
-function filterPokemons() {
-    let search = document.getElementById('formControlDefault').value.toLowerCase();
-
-    // Filter allListedPokemons basierend auf dem Suchwert
-    filteredPokemons = allListedPokemons.filter(pokemon =>
-        pokemon.name.toLowerCase().includes(search)
-    );
-
-    renderFilteredPokemons(filteredPokemons);
-}
-
-function renderFilteredPokemons(filteredPokemons) {
-    let mainView = document.getElementById('pokecard-main');
-    mainView.innerHTML = '';
-
-    for (let i = 0; i < filteredPokemons.length; i++) {
-        let filteredpokemon = filteredPokemons[i];
-        PokemonInfoforFilter(filteredpokemon);
     }
-}
 
-async function PokemonInfoforFilter(filteredpokemon) {
-    // Extrahiere die Pokemon-ID aus der URL
-    let pokemonId = extractPokemonId(filteredpokemon.url);
-
-    // Überprüfe, ob die ID gültig ist
-    if (pokemonId !== null) {
-        let individualLink = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/`;
-        let ind_resp = await fetch(individualLink);
-        let searchedPokemon = await ind_resp.json();
-
-        let name = searchedPokemon['forms'][0]['name']; // Beachten Sie den Index 0 für den Namen
-        console.log('Name ist', name);
-        let id = pokemonId;
-        console.log('hier die filterId', pokemonId);
-        let profile_image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`
-        console.log(profile_image);
-    } else {
-        console.error('Ungültige Pokemon-URL:', filteredpokemon.url);
+    function calculatePercentage(value) {
+        const maxValue = 100;
+        return Math.floor((value / maxValue) * 100);
     }
-}
 
-function extractPokemonId(url) {
-    const match = url.match(/\/(\d+)\/$/);
-    
-    // Falls eine Übereinstimmung gefunden wurde, gibt die extrahierte ID zurück, ansonsten null
-    return match ? parseInt(match[1]) : null;
-}
-
-function closeDetailCard() {
-    clearPokemonCard();
-    document.getElementById('popup-card').classList.add("d-none");
-}
-
-function clearPokemonCard() {
-    const detailMainContainerId = `Detail-Main-Container${currentPokemonIndex}`;
-    const detailMainContainer = document.getElementById(detailMainContainerId);
-
-    if (detailMainContainer) {
-        detailMainContainer.innerHTML = '';
+    function renderAbout(pokemonId) {
+        clearContainer();
+        updateDetailCard(pokemonId);
     }
-}
+
+
+    function filterPokemons() {
+        let search = document.getElementById('formControlDefault').value.toLowerCase();
+
+        // Filter allListedPokemons basierend auf dem Suchwert
+        filteredPokemons = allListedPokemons.filter(pokemon =>
+            pokemon.name.toLowerCase().startsWith(search)
+        );
+        renderFilteredPokemons(filteredPokemons);
+    }
+
+
+    function renderFilteredPokemons(filteredPokemons) {
+        let mainView = document.getElementById('pokecard-main');
+        mainView.innerHTML = '';
+
+        for (let i = 0; i < filteredPokemons.length; i++) {
+            let filteredpokemon = filteredPokemons[i];
+            getFilteredData(filteredpokemon);
+        }
+    }
+
+    function getFilteredData(filteredPokemon) {
+        let url = filteredPokemon['url'];
+        let id = extractPokemonId(url);
+        renderPokemonInfo(id);
+    }
+
+    function extractPokemonId(url) {
+        const match = url.match(/\/(\d+)\/$/);
+        // Falls eine Übereinstimmung gefunden wurde, gibt die extrahierte ID zurück, ansonsten null
+        return match ? parseInt(match[1]) : null;
+    }
+
+
+    function closeDetailCard() {
+        clearPokemonCard();
+        document.getElementById('popup-card').classList.add("d-none");
+    }
+
+    function clearPokemonCard() {
+        const detailMainContainerId = `Detail-Main-Container${currentPokemonIndex}`;
+        const detailMainContainer = document.getElementById(detailMainContainerId);
+
+        if (detailMainContainer) {
+            detailMainContainer.innerHTML = '';
+        }
+    }
+
+    function resetPokemon(){
+        document.getElementById('formControlDefault').value='';
+        document.getElementById('pokecard-main').innerHTML ='';
+   
+        offsetNumber = 0;
+        loadPokemon(offsetNumber);
+    }

@@ -25,6 +25,10 @@ body {
   padding: 40px;
 }
 
+#searchField {
+  display: flex;
+}
+
 .page-title {
   margin-right: 28px;
   font-size: 35px;
@@ -41,7 +45,7 @@ body {
   width: 68px;
 }
 
-input{
+input {
   text-align: left !important;
 }
 
@@ -53,6 +57,7 @@ input{
   text-align: center;
   padding-left: 18px !important;
   padding-right: 18px !important;
+  margin-left: 5px !important;
 }
 
 .form-control::placeholder {
@@ -103,11 +108,11 @@ h5 {
   color: black !important;
 }
 
-.single-pokeCard:hover .black-pokeball{
+.single-pokeCard:hover .black-pokeball {
   display: none;
 }
 
-.single-pokeCard:hover{
+.single-pokeCard:hover {
   transform: scale(0.98, 0.98);
   transition: 0.4s;
   overflow: visible;
@@ -116,12 +121,11 @@ h5 {
   cursor: pointer;
 }
 
-.single-pokeCard:hover #pokemonImage{
+.single-pokeCard:hover #pokemonImage {
   transform: scale(1.55, 1.55);
   transition: 0.4s;
   color: rgba(0, 0, 0, 0.1);
   cursor: pointer;
-
 }
 .category-container {
   border: 2px solid;
@@ -355,12 +359,6 @@ b {
   font-size: 18px;
 }
 
-.link:hover {
-  background-color: rgb(242, 234, 234);
-  border-radius: 5px;
-  padding: 3px;
-}
-
 .information-container {
   padding: 0 9px;
 }
@@ -408,8 +406,9 @@ b {
   cursor: pointer;
 }
 
-.evolution-name:hover {
+.evolution-image:hover {
   transform: scale(1.1); /* oder andere Transformationen */
+  cursor: pointer;
 }
 
 .evolution-name {
@@ -553,6 +552,11 @@ img {
 }
 
 /*media-query detail-ansichten*/
+@media(max-width: 442px){
+  .form-control::placeholder {
+    font-size: 14px !important;
+  }
+}
 @media (max-width: 435px) {
   .abilities {
     font-size: 16px;
@@ -573,10 +577,19 @@ img {
   #information-text-container {
     padding: 0 2px;
   }
-  img{
+  img {
     width: 75px;
   }
-  Detail-Pokemon-Name {
+  .Detail-Pokemon-Name {
     font-size: 22px;
+  }
 }
+
+@media(max-width: 350px){
+  .btn-secondary {
+    padding: 3px !important;
+    height: fit-content;
+    margin-top: 32px !important;
+    font-size: 14px !important;
+  }
 }
